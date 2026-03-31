@@ -3,6 +3,7 @@ import {
   Newspaper, Image, BarChart3, UserCog, Palette, LogOut,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import logoYayasan from "@/assets/logo-yayasan.png";
 import { useAuth, UserRole } from "@/lib/auth-context";
 import { useNavigate, useLocation } from "react-router-dom";
 import {

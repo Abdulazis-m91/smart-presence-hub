@@ -143,8 +143,31 @@ export default function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* User card */}
+        {!collapsed && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mx-3 mt-auto mb-1"
+          >
+            <div className={`rounded-2xl bg-gradient-to-r ${roleColors[user.role]} p-[1px]`}>
+              <div className="rounded-2xl bg-sidebar p-3">
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${roleColors[user.role]} flex items-center justify-center text-white font-bold text-sm shrink-0`}>
+                    {user.name.charAt(0)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-sidebar-accent-foreground truncate">{user.name}</p>
+                    <p className="text-[11px] text-sidebar-foreground/50">{roleLabels[user.role]}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Logout */}
-        <div className="p-3 mt-auto">
+        <div className="p-3">
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full text-sm text-sidebar-foreground/40 hover:text-destructive transition-all p-3 rounded-xl hover:bg-destructive/10 group"

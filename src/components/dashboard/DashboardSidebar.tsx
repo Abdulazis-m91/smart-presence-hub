@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Calendar, Users, ClipboardCheck, FileText,
-  Newspaper, Image, BarChart3, UserCog, Palette, LogOut, CreditCard,
+  Newspaper, Image, BarChart3, UserCog, Palette, LogOut,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth, UserRole } from "@/lib/auth-context";

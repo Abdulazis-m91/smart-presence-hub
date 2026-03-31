@@ -1,4 +1,4 @@
-import { CreditCard } from "lucide-react";
+import logoYayasan from "@/assets/logo-yayasan.png";
 
 export default function Footer() {
   return (

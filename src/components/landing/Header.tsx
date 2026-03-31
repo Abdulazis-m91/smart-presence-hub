@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { CreditCard, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import logoYayasan from "@/assets/logo-yayasan.png";
 import LoginModal from "@/components/LoginModal";
 
 const navItems = ["Informasi", "Tentang Kami", "Berita", "Gallery"];

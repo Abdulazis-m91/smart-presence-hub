@@ -19,9 +19,7 @@ export default function Header() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-lg gradient-primary flex items-center justify-center">
-              <CreditCard className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <img src={logoYayasan} alt="Yayasan Baitulloh Lampung" className="h-9 w-9 rounded-full object-contain" />
             <span className="font-bold text-lg text-foreground">SmartPresence</span>
           </div>
 

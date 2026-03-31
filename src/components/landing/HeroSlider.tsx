@@ -1,92 +1,269 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Wifi, CreditCard, BarChart3 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { ChevronLeft, ChevronRight, Wifi, CreditCard, BarChart3, Sparkles } from "lucide-react";
 
 const slides = [
   {
     icon: CreditCard,
-    title: "Smart Attendance System",
-    subtitle: "Sistem absensi modern berbasis RFID Smartcard untuk sekolah dan pesantren",
-    gradient: "from-primary/20 to-secondary/20",
+    title: "Smart Attendance",
+    highlight: "System",
+    subtitle: "Sistem absensi modern berbasis RFID Smartcard untuk sekolah dan pesantren dengan teknologi terdepan",
+    gradient: "from-blue-500/20 via-cyan-500/10 to-emerald-500/20",
+    particleColor: "bg-primary/30",
   },
   {
     icon: Wifi,
-    title: "Real-Time Monitoring",
-    subtitle: "Pantau kehadiran guru, siswa, dan staf secara langsung dari mana saja",
-    gradient: "from-secondary/20 to-primary/20",
+    title: "Real-Time",
+    highlight: "Monitoring",
+    subtitle: "Pantau kehadiran guru, siswa, dan staf secara langsung dari mana saja dengan dashboard interaktif",
+    gradient: "from-emerald-500/20 via-teal-500/10 to-blue-500/20",
+    particleColor: "bg-secondary/30",
   },
   {
     icon: BarChart3,
-    title: "Laporan & Analitik",
-    subtitle: "Dapatkan insight mendalam dengan laporan kehadiran otomatis dan akurat",
-    gradient: "from-primary/20 to-accent/40",
+    title: "Laporan &",
+    highlight: "Analitik",
+    subtitle: "Dapatkan insight mendalam dengan laporan kehadiran otomatis, akurat, dan visual yang informatif",
+    gradient: "from-violet-500/20 via-blue-500/10 to-cyan-500/20",
+    particleColor: "bg-primary/30",
   },
 ];
 
+const floatingParticles = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+  size: Math.random() * 4 + 2,
+  duration: Math.random() * 10 + 15,
+  delay: Math.random() * 5,
+}));
+
+const stats = [
+  { value: 1200, suffix: "+", label: "Siswa Aktif" },
+  { value: 98, suffix: "%", label: "Akurasi" },
+  { value: 50, suffix: "+", label: "Guru & Staf" },
+  { value: 24, suffix: "/7", label: "Monitoring" },
+];
+
+function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const duration = 2000;
+    const increment = value / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= value) {
+        setCount(value);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [value]);
+  return <>{count}{suffix}</>;
+}
+
 export default function HeroSlider() {
   const [current, setCurrent] = useState(0);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const bgX = useTransform(mouseX, [0, 1], [-20, 20]);
+  const bgY = useTransform(mouseY, [0, 1], [-20, 20]);
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrent((c) => (c + 1) % slides.length), 5000);
+    const timer = setInterval(() => setCurrent((c) => (c + 1) % slides.length), 6000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width);
+    mouseY.set((e.clientY - rect.top) / rect.height);
+  }, [mouseX, mouseY]);
 
   const go = (dir: number) => setCurrent((c) => (c + dir + slides.length) % slides.length);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16">
-      {/* Background glow */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-glow-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-glow-pulse" style={{ animationDelay: "1.5s" }} />
+    <section
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      onMouseMove={handleMouseMove}
+    >
+      {/* Animated mesh gradient background */}
+      <div className="absolute inset-0">
+        <motion.div
+          style={{ x: bgX, y: bgY }}
+          className="absolute inset-0"
+        >
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
+          <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-primary/8 rounded-full blur-[100px] animate-glow-pulse" />
+          <div className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-secondary/8 rounded-full blur-[100px] animate-glow-pulse" style={{ animationDelay: "2s" }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] animate-glow-pulse" style={{ animationDelay: "4s" }} />
+        </motion.div>
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
+      {/* Floating particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {floatingParticles.map((p) => (
+          <motion.div
+            key={p.id}
+            className={`absolute rounded-full ${slides[current].particleColor}`}
+            style={{
+              width: p.size,
+              height: p.size,
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              x: [0, 15, 0],
+              opacity: [0, 0.8, 0],
+            }}
+            transition={{
+              duration: p.duration,
+              delay: p.delay,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Grid pattern overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+        }}
+      />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 pt-24 pb-16">
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-8"
           >
-            <div className={`inline-flex p-5 rounded-2xl bg-gradient-to-br ${slides[current].gradient} glass`}>
-              {(() => {
-                const Icon = slides[current].icon;
-                return <Icon className="h-12 w-12 text-primary" />;
-              })()}
-            </div>
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium text-muted-foreground"
+            >
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span>Sistem Absensi Generasi Baru</span>
+            </motion.div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight">
-              {slides[current].title.split(" ").map((word, i) => (
-                <span key={i} className={i === 0 ? "gradient-text" : ""}>{word} </span>
-              ))}
-            </h1>
+            {/* Icon */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="flex justify-center"
+            >
+              <div className={`relative p-6 rounded-3xl bg-gradient-to-br ${slides[current].gradient} glass border-0`}>
+                <div className="absolute inset-0 rounded-3xl glow-primary opacity-50" />
+                {(() => {
+                  const Icon = slides[current].icon;
+                  return <Icon className="relative h-14 w-14 text-primary" strokeWidth={1.5} />;
+                })()}
+              </div>
+            </motion.div>
 
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+            {/* Title */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight"
+            >
+              <span className="text-foreground">{slides[current].title} </span>
+              <span className="gradient-text">{slides[current].highlight}</span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45, duration: 0.5 }}
+              className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+            >
               {slides[current].subtitle}
-            </p>
+            </motion.p>
 
-            <div className="flex items-center justify-center gap-3 pt-4">
-              {slides.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrent(i)}
-                  className={`h-2 rounded-full transition-all duration-300 ${i === current ? "w-8 gradient-primary" : "w-2 bg-muted-foreground/30"}`}
-                />
-              ))}
-            </div>
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55, duration: 0.5 }}
+              className="flex flex-wrap items-center justify-center gap-4 pt-2"
+            >
+              <button className="group relative gradient-primary text-primary-foreground px-8 py-3.5 rounded-2xl text-sm font-semibold overflow-hidden transition-all hover:shadow-lg hover:shadow-primary/25">
+                <span className="relative z-10">Mulai Sekarang</span>
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              </button>
+              <button className="glass px-8 py-3.5 rounded-2xl text-sm font-semibold text-foreground hover:bg-muted/50 transition-all">
+                Pelajari Lebih Lanjut
+              </button>
+            </motion.div>
           </motion.div>
         </AnimatePresence>
 
-        <button onClick={() => go(-1)} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full hover:bg-muted transition-colors">
-          <ChevronLeft className="h-5 w-5 text-foreground" />
-        </button>
-        <button onClick={() => go(1)} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full hover:bg-muted transition-colors">
-          <ChevronRight className="h-5 w-5 text-foreground" />
-        </button>
+        {/* Stats bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          {stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 + i * 0.1 }}
+              className="glass rounded-2xl p-5 text-center hover:glow-primary transition-all duration-500 group"
+            >
+              <p className="text-2xl sm:text-3xl font-bold gradient-text">
+                <AnimatedCounter value={s.value} suffix={s.suffix} />
+              </p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">{s.label}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Dots */}
+        <div className="flex items-center justify-center gap-3 mt-10">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`rounded-full transition-all duration-500 ${
+                i === current
+                  ? "w-10 h-3 gradient-primary shadow-lg shadow-primary/30"
+                  : "w-3 h-3 bg-muted-foreground/20 hover:bg-muted-foreground/40"
+              }`}
+            />
+          ))}
+        </div>
       </div>
+
+      {/* Nav arrows */}
+      <button onClick={() => go(-1)} className="absolute left-6 top-1/2 -translate-y-1/2 p-3 glass rounded-2xl hover:bg-muted/50 transition-all hover:scale-110 group z-20">
+        <ChevronLeft className="h-5 w-5 text-foreground group-hover:text-primary transition-colors" />
+      </button>
+      <button onClick={() => go(1)} className="absolute right-6 top-1/2 -translate-y-1/2 p-3 glass rounded-2xl hover:bg-muted/50 transition-all hover:scale-110 group z-20">
+        <ChevronRight className="h-5 w-5 text-foreground group-hover:text-primary transition-colors" />
+      </button>
+
+      {/* Bottom gradient fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 }

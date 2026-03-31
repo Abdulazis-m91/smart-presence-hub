@@ -104,5 +104,3 @@ export default function Header() {
     </>
   );
 }
-
-import { AnimatePresence } from "framer-motion";

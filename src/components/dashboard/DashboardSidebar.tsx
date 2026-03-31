@@ -81,9 +81,7 @@ export default function DashboardSidebar() {
       <SidebarContent className="bg-sidebar">
         {/* Logo */}
         <div className="p-4 flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg gradient-primary flex items-center justify-center shrink-0">
-            <CreditCard className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <img src={logoYayasan} alt="Logo" className="h-9 w-9 rounded-full object-contain shrink-0" />
           {!collapsed && <span className="font-bold text-sidebar-foreground">SmartPresence</span>}
         </div>
 

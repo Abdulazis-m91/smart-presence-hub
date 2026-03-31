@@ -101,29 +101,6 @@ export default function DashboardSidebar() {
           )}
         </div>
 
-        {/* User card */}
-        {!collapsed && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mx-3 mb-4"
-          >
-            <div className={`rounded-2xl bg-gradient-to-r ${roleColors[user.role]} p-[1px]`}>
-              <div className="rounded-2xl bg-sidebar p-3">
-                <div className="flex items-center gap-3">
-                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${roleColors[user.role]} flex items-center justify-center text-white font-bold text-sm shrink-0`}>
-                    {user.name.charAt(0)}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-sidebar-accent-foreground truncate">{user.name}</p>
-                    <p className="text-[11px] text-sidebar-foreground/50">{roleLabels[user.role]}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
         <SidebarGroup className="flex-1">
           <SidebarGroupLabel className="text-sidebar-foreground/30 text-[10px] uppercase tracking-widest font-semibold px-4">
             Menu Utama

@@ -13,6 +13,10 @@ import PerizinanPage from "./pages/dashboard/PerizinanPage";
 import PlaceholderPage from "./pages/dashboard/PlaceholderPage";
 import GuruSiswaPage from "./pages/dashboard/GuruSiswaPage";
 import GuruAbsenPage from "./pages/dashboard/GuruAbsenPage";
+import PetugasAbsensiPage from "./pages/dashboard/PetugasAbsensiPage";
+import PetugasPerizinanPage from "./pages/dashboard/PetugasPerizinanPage";
+import PetugasJadwalPage from "./pages/dashboard/PetugasJadwalPage";
+import PetugasLaporanPage from "./pages/dashboard/PetugasLaporanPage";
 
 const queryClient = new QueryClient();
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, Users, Edit3, Plus } from "lucide-react";
+import TambahJadwalModal from "@/components/dashboard/TambahJadwalModal";
 
 const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 

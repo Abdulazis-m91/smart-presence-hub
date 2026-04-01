@@ -94,10 +94,10 @@ export default function DashboardLayout() {
                 </div>
               </button>
             </div>
-
-            {/* Profile Popup */}
-            <ProfilePopup open={profileOpen} onClose={() => setProfileOpen(false)} />
           </header>
+
+          {/* Profile Popup - outside header to avoid clipping */}
+          <ProfilePopup open={profileOpen} onClose={() => setProfileOpen(false)} />
 
           {/* Page content */}
           <main className={`flex-1 p-4 md:p-6 overflow-auto ${isMobile ? "pb-24" : ""}`}>

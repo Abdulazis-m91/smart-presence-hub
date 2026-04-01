@@ -138,7 +138,7 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
                   Keluar
                 </button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         </>
       )}

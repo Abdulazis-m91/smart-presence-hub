@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DashboardSidebar from "./DashboardSidebar";
 import MobileBottomNav from "./MobileBottomNav";
+import ProfilePopup from "./ProfilePopup";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Search, ChevronRight, Home } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -13,11 +15,16 @@ const pageTitles: Record<string, string> = {
   "/dashboard/perizinan": "Perizinan",
   "/dashboard/siswa": "Data Siswa",
   "/dashboard/absensi": "Absensi",
+  "/dashboard/guru-siswa": "Data Siswa",
+  "/dashboard/guru-absen": "Absensi",
   "/dashboard/berita": "Berita",
   "/dashboard/galeri": "Galeri",
   "/dashboard/laporan": "Laporan",
   "/dashboard/petugas": "Petugas",
   "/dashboard/tampilan": "Tampilan",
+  "/dashboard/petugas-perizinan": "Perizinan Guru",
+  "/dashboard/petugas-jadwal": "Daftar Mengajar",
+  "/dashboard/petugas-laporan": "Laporan",
 };
 
 export default function DashboardLayout() {

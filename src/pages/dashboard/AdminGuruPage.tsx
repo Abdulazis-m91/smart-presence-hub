@@ -80,7 +80,7 @@ export default function AdminGuruPage() {
           <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass text-sm font-medium text-foreground hover:ring-2 hover:ring-primary/20 transition-all">
             <Download className="h-4 w-4" /><span className="hidden sm:inline">Export PDF</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
             <Plus className="h-4 w-4" /><span className="hidden sm:inline">Tambah Guru</span>
           </button>
         </div>

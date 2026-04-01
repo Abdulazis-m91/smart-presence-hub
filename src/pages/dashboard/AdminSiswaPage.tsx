@@ -79,7 +79,7 @@ export default function AdminSiswaPage() {
             <Download className="h-4 w-4" />
             <span className="hidden sm:inline">Export PDF</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Tambah Siswa</span>
           </button>

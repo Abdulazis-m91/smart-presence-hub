@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DashboardSidebar from "./DashboardSidebar";
 import MobileBottomNav from "./MobileBottomNav";
+import ProfilePopup from "./ProfilePopup";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Search, ChevronRight, Home } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -13,17 +15,23 @@ const pageTitles: Record<string, string> = {
   "/dashboard/perizinan": "Perizinan",
   "/dashboard/siswa": "Data Siswa",
   "/dashboard/absensi": "Absensi",
+  "/dashboard/guru-siswa": "Data Siswa",
+  "/dashboard/guru-absen": "Absensi",
   "/dashboard/berita": "Berita",
   "/dashboard/galeri": "Galeri",
   "/dashboard/laporan": "Laporan",
   "/dashboard/petugas": "Petugas",
   "/dashboard/tampilan": "Tampilan",
+  "/dashboard/petugas-perizinan": "Perizinan Guru",
+  "/dashboard/petugas-jadwal": "Daftar Mengajar",
+  "/dashboard/petugas-laporan": "Laporan",
 };
 
 export default function DashboardLayout() {
   const { user } = useAuth();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const [profileOpen, setProfileOpen] = useState(false);
 
   if (!user) return <Navigate to="/" replace />;
 
@@ -72,17 +80,23 @@ export default function DashboardLayout() {
                 <span className="absolute top-1.5 right-1.5 md:top-2 md:right-2 h-2 w-2 bg-destructive rounded-full animate-pulse" />
               </button>
 
-              {/* User avatar */}
-              <div className="flex items-center gap-2 md:gap-3 pl-2 md:pl-3 border-l border-border/50">
+              {/* User avatar - clickable */}
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2 md:gap-3 pl-2 md:pl-3 border-l border-border/50 hover:opacity-80 transition-opacity cursor-pointer"
+              >
                 <div className="h-8 w-8 md:h-9 md:w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
                   {user.name.charAt(0)}
                 </div>
-                <div className="hidden lg:block">
+                <div className="hidden lg:block text-left">
                   <p className="text-sm font-semibold text-foreground leading-tight">{user.name}</p>
                   <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
                 </div>
-              </div>
+              </button>
             </div>
+
+            {/* Profile Popup */}
+            <ProfilePopup open={profileOpen} onClose={() => setProfileOpen(false)} />
           </header>
 
           {/* Page content */}

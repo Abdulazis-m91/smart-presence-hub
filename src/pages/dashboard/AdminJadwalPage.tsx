@@ -75,6 +75,7 @@ const smaSchedule: Record<string, ScheduleItem[]> = {
 
 export default function AdminJadwalPage() {
   const [tab, setTab] = useState<"smp" | "sma">("smp");
+  const [showModal, setShowModal] = useState(false);
   const schedule = tab === "smp" ? smpSchedule : smaSchedule;
 
   return (

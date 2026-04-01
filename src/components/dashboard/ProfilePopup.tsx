@@ -46,100 +46,108 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
+          {/* Dimmed backdrop overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
             onClick={onClose}
           />
 
-          {/* Popup */}
+          {/* Centered popup */}
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.92 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute right-4 md:right-6 top-14 md:top-16 z-50 w-80 glass rounded-2xl shadow-2xl shadow-black/10 border border-border/50 overflow-hidden"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors z-10"
-            >
-              <X className="h-4 w-4" />
-            </button>
-
-            {/* Top section - Photo & Name */}
-            <div className="pt-8 pb-5 px-6 text-center">
-              <div className="h-20 w-20 rounded-2xl gradient-primary flex items-center justify-center text-primary-foreground text-2xl font-bold mx-auto shadow-lg">
-                {user.name.charAt(0)}
-              </div>
-              <h3 className="text-lg font-bold text-foreground mt-4">{user.name}</h3>
-              <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
-                <BookOpen className="h-3.5 w-3.5" />
-                {profile.subject}
-              </p>
-            </div>
-
-            <Separator />
-
-            {/* Info section */}
-            <div className="px-6 py-4 space-y-3.5">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                  <BadgeCheck className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">NIP</p>
-                  <p className="text-sm text-foreground font-mono truncate">{profile.nip}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">Email</p>
-                  <p className="text-sm text-foreground truncate">{profile.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">WhatsApp</p>
-                  <p className="text-sm text-foreground">{profile.whatsapp}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                  <BadgeCheck className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">Status</p>
-                  <p className="text-sm text-foreground font-medium">{roleLabel[user.role] || user.role}</p>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Actions */}
-            <div className="p-4 space-y-2">
-              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted/50 transition-colors text-sm font-medium text-foreground">
-                <Pencil className="h-4 w-4 text-muted-foreground" />
-                Edit Profil
-              </button>
+            <div className="w-full max-w-sm bg-background rounded-2xl shadow-2xl shadow-black/20 border border-border/50 overflow-hidden pointer-events-auto">
+              {/* Close button */}
               <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-destructive/10 transition-colors text-sm font-medium text-destructive"
+                onClick={onClose}
+                className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors z-10"
               >
-                <LogOut className="h-4 w-4" />
-                Keluar
+                <X className="h-4 w-4" />
               </button>
+
+              {/* Top section - Photo & Name */}
+              <div className="pt-8 pb-5 px-6 text-center relative">
+                <button
+                  onClick={onClose}
+                  className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+                <div className="h-20 w-20 rounded-2xl gradient-primary flex items-center justify-center text-primary-foreground text-2xl font-bold mx-auto shadow-lg">
+                  {user.name.charAt(0)}
+                </div>
+                <h3 className="text-lg font-bold text-foreground mt-4">{user.name}</h3>
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  {profile.subject}
+                </p>
+              </div>
+
+              <Separator />
+
+              {/* Info section */}
+              <div className="px-6 py-4 space-y-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                    <BadgeCheck className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">NIP</p>
+                    <p className="text-sm text-foreground font-mono truncate">{profile.nip}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">Email</p>
+                    <p className="text-sm text-foreground truncate">{profile.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">WhatsApp</p>
+                    <p className="text-sm text-foreground">{profile.whatsapp}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                    <BadgeCheck className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">Status</p>
+                    <p className="text-sm text-foreground font-medium">{roleLabel[user.role] || user.role}</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Actions - side by side */}
+              <div className="p-4 flex gap-3">
+                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-semibold shadow-md">
+                  <Pencil className="h-4 w-4" />
+                  Edit
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors text-sm font-semibold shadow-md"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Keluar
+                </button>
+              </div>
             </div>
           </motion.div>
         </>

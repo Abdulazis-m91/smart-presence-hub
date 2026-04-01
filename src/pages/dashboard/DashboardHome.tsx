@@ -1,5 +1,6 @@
 import { useAuth } from "@/lib/auth-context";
 import GuruDashboard from "./GuruDashboard";
+import PetugasDashboard from "./PetugasDashboard";
 import { motion } from "framer-motion";
 import { Users, ClipboardCheck, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react";
 
@@ -193,5 +194,6 @@ function AdminDashboard() {
 export default function DashboardHome() {
   const { user } = useAuth();
   if (user?.role === "guru") return <GuruDashboard />;
+  if (user?.role === "petugas") return <PetugasDashboard />;
   return <AdminDashboard />;
 }

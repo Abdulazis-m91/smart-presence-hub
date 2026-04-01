@@ -153,6 +153,8 @@ export default function AdminJadwalPage() {
           );
         })}
       </div>
+
+      <TambahJadwalModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

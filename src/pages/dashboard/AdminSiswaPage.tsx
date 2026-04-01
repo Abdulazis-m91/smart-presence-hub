@@ -199,6 +199,8 @@ export default function AdminSiswaPage() {
           </div>
         )}
       </motion.div>
+
+      <TambahSiswaModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

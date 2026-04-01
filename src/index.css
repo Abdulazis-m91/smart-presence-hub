@@ -126,4 +126,7 @@
   .stat-card {
     @apply glass rounded-xl p-6 glow-primary transition-all duration-300 hover:scale-[1.02];
   }
+  .form-input {
+    @apply w-full px-4 py-2.5 rounded-xl bg-muted/30 border border-border/30 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all;
+  }
 }

@@ -203,6 +203,8 @@ export default function AdminGuruPage() {
           </div>
         )}
       </motion.div>
+
+      <TambahGuruModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

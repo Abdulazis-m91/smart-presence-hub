@@ -28,6 +28,8 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
               <Route path="jadwal" element={<JadwalPage />} />
+              <Route path="guru-siswa" element={<GuruSiswaPage />} />
+              <Route path="guru-absen" element={<GuruAbsenPage />} />
               <Route path="perizinan" element={<PerizinanPage />} />
               <Route path="absensi" element={<PlaceholderPage />} />
               <Route path="siswa" element={<PlaceholderPage />} />

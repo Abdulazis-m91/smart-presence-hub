@@ -196,7 +196,7 @@ export default function GuruAbsenPage() {
                       <span className="h-7 w-7 rounded-lg bg-muted/50 flex items-center justify-center text-xs font-bold text-muted-foreground">{row.no}</span>
                     </td>
                     <td className="py-4 px-5 font-mono text-xs text-foreground">{row.nisn}</td>
-                    <td className="py-4 px-5 font-medium text-foreground">{row.name || row.studentName}</td>
+                    <td className="py-4 px-5 font-medium text-foreground">{<td className="py-4 px-5 font-medium text-foreground">{row.studentName}</td>}</td>
                     <td className="py-4 px-5 text-foreground">{row.subject}</td>
                     <td className="py-4 px-5 text-foreground">{row.teacherName}</td>
                     <td className="py-4 px-5">

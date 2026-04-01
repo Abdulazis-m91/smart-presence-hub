@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Search, Users, GraduationCap, BookOpen } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const students = [
   { no: 1, nisn: "0012345601", name: "Andi Pratama", class: "XII-A", gender: "L", status: "Aktif" },
@@ -18,6 +18,23 @@ const students = [
 ];
 
 const classes = ["Semua Kelas", "XII-A", "XI-B", "XI-C", "X-A"];
+
+function AnimatedNumber({ value }: { value: number }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    const duration = 800;
+    const startTime = Date.now();
+    const tick = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(eased * value));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [value]);
+  return <>{display}</>;
+}
 
 export default function GuruSiswaPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,11 +56,11 @@ export default function GuruSiswaPage() {
         <p className="text-muted-foreground mt-1">Daftar siswa yang Anda ajar</p>
       </motion.div>
 
-      {/* Summary */}
+      {/* Summary cards - dashboard style */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { icon: Users, label: "Total Siswa", value: `${students.length} Siswa`, gradient: "from-blue-500 to-cyan-500" },
-          { icon: GraduationCap, label: "Kelas Diajar", value: "4 Kelas", gradient: "from-emerald-500 to-teal-500" },
+          { icon: Users, label: "Total Siswa", value: students.length, gradient: "from-blue-500 to-cyan-500" },
+          { icon: GraduationCap, label: "Kelas Diajar", value: 4, gradient: "from-emerald-500 to-teal-500" },
           { icon: BookOpen, label: "Mata Pelajaran", value: "Matematika", gradient: "from-violet-500 to-purple-500" },
         ].map((item, i) => (
           <motion.div
@@ -51,54 +68,57 @@ export default function GuruSiswaPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.08 }}
-            className="glass rounded-2xl p-5 flex items-center gap-4 group hover:shadow-lg hover:shadow-primary/5 transition-all duration-500"
+            className="group relative glass rounded-2xl p-6 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1"
           >
-            <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-              <item.icon className="h-6 w-6 text-white" strokeWidth={1.5} />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{item.label}</p>
-              <p className="text-lg font-bold text-foreground">{item.value}</p>
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.gradient} opacity-60 group-hover:opacity-100 transition-opacity`} />
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">{item.label}</p>
+                <p className="text-3xl font-bold text-foreground mt-2 tracking-tight">
+                  {typeof item.value === "number" ? <AnimatedNumber value={item.value} /> : item.value}
+                </p>
+              </div>
+              <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                <item.icon className="h-6 w-6 text-white" strokeWidth={1.5} />
+              </div>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Filters */}
+      {/* Unified filter + table container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="flex flex-col sm:flex-row gap-3"
-      >
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl glass flex-1 max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Cari nama siswa atau NISN..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
-          />
-        </div>
-        <select
-          value={selectedClass}
-          onChange={(e) => setSelectedClass(e.target.value)}
-          className="px-4 py-3 rounded-xl glass text-sm text-foreground bg-transparent outline-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all"
-        >
-          {classes.map((c) => (
-            <option key={c} value={c} className="bg-background text-foreground">{c}</option>
-          ))}
-        </select>
-      </motion.div>
-
-      {/* Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
         className="glass rounded-2xl overflow-hidden"
       >
+        {/* Filters inside container */}
+        <div className="p-5 border-b border-border/30">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/20 flex-1 max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Cari nama siswa atau NISN..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
+              />
+            </div>
+            <select
+              value={selectedClass}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              className="px-4 py-3 rounded-xl bg-muted/20 text-sm text-foreground bg-transparent outline-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all"
+            >
+              {classes.map((c) => (
+                <option key={c} value={c} className="bg-background text-foreground">{c}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

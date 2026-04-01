@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Search, ClipboardCheck, Clock, AlertTriangle, UserX, CalendarDays } from "lucide-react";
-import { useState, useMemo } from "react";
+import { Search, ClipboardCheck, Clock, UserX, CalendarDays, Users } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
@@ -43,6 +43,23 @@ const statusColors: Record<AttendanceStatus, string> = {
 
 const statusOptions: AttendanceStatus[] = ["Tepat Waktu", "Terlambat", "Tidak Hadir"];
 
+function AnimatedNumber({ value }: { value: number }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    const duration = 800;
+    const startTime = Date.now();
+    const tick = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(eased * value));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [value]);
+  return <>{display}</>;
+}
+
 export default function GuruAbsenPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("Semua Status");
@@ -61,6 +78,7 @@ export default function GuruAbsenPage() {
   }, [searchQuery, selectedStatus, selectedDate]);
 
   const counts = useMemo(() => ({
+    total: attendanceData.length,
     tepatWaktu: attendanceData.filter((r) => r.status === "Tepat Waktu").length,
     terlambat: attendanceData.filter((r) => r.status === "Terlambat").length,
     tidakHadir: attendanceData.filter((r) => r.status === "Tidak Hadir").length,
@@ -73,9 +91,10 @@ export default function GuruAbsenPage() {
         <p className="text-muted-foreground mt-1">Data absensi siswa dari mesin RFID</p>
       </motion.div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Summary cards - dashboard style */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
+          { icon: Users, label: "Total Siswa", value: counts.total, gradient: "from-blue-500 to-cyan-500" },
           { icon: ClipboardCheck, label: "Tepat Waktu", value: counts.tepatWaktu, gradient: "from-emerald-500 to-teal-500" },
           { icon: Clock, label: "Terlambat", value: counts.terlambat, gradient: "from-orange-500 to-amber-500" },
           { icon: UserX, label: "Tidak Hadir", value: counts.tidakHadir, gradient: "from-rose-500 to-red-500" },
@@ -85,88 +104,89 @@ export default function GuruAbsenPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.08 }}
-            className="glass rounded-2xl p-5 flex items-center gap-4 group hover:shadow-lg hover:shadow-primary/5 transition-all duration-500"
+            className="group relative glass rounded-2xl p-6 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1"
           >
-            <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-              <item.icon className="h-6 w-6 text-white" strokeWidth={1.5} />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{item.label}</p>
-              <p className="text-2xl font-bold text-foreground">{item.value}</p>
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.gradient} opacity-60 group-hover:opacity-100 transition-opacity`} />
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">{item.label}</p>
+                <p className="text-3xl font-bold text-foreground mt-2 tracking-tight">
+                  <AnimatedNumber value={item.value} />
+                </p>
+              </div>
+              <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                <item.icon className="h-6 w-6 text-white" strokeWidth={1.5} />
+              </div>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="flex flex-col sm:flex-row gap-3"
-      >
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl glass flex-1 max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Cari nama siswa atau NISN..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
-          />
-        </div>
-
-        {/* Date Picker */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <button className={cn(
-              "flex items-center gap-2 px-4 py-3 rounded-xl glass text-sm transition-all focus:ring-2 focus:ring-primary/20",
-              selectedDate ? "text-foreground" : "text-muted-foreground"
-            )}>
-              <CalendarDays className="h-4 w-4" />
-              {selectedDate ? format(selectedDate, "dd MMM yyyy", { locale: localeId }) : "Filter Tanggal"}
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className={cn("p-3 pointer-events-auto")}
-            />
-            {selectedDate && (
-              <div className="px-3 pb-3">
-                <button
-                  onClick={() => setSelectedDate(undefined)}
-                  className="w-full text-xs text-muted-foreground hover:text-foreground py-2 rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  Reset tanggal
-                </button>
-              </div>
-            )}
-          </PopoverContent>
-        </Popover>
-
-        {/* Status Filter */}
-        <select
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-          className="px-4 py-3 rounded-xl glass text-sm text-foreground bg-transparent outline-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all"
-        >
-          <option value="Semua Status" className="bg-background text-foreground">Semua Status</option>
-          {statusOptions.map((s) => (
-            <option key={s} value={s} className="bg-background text-foreground">{s}</option>
-          ))}
-        </select>
-      </motion.div>
-
-      {/* Table */}
+      {/* Unified filter + table container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
         className="glass rounded-2xl overflow-hidden"
       >
+        {/* Filters inside container */}
+        <div className="p-5 border-b border-border/30">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/20 flex-1 max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Cari nama siswa atau NISN..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
+              />
+            </div>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className={cn(
+                  "flex items-center gap-2 px-4 py-3 rounded-xl bg-muted/20 text-sm transition-all focus:ring-2 focus:ring-primary/20",
+                  selectedDate ? "text-foreground" : "text-muted-foreground"
+                )}>
+                  <CalendarDays className="h-4 w-4" />
+                  {selectedDate ? format(selectedDate, "dd MMM yyyy", { locale: localeId }) : "Filter Tanggal"}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  className={cn("p-3 pointer-events-auto")}
+                />
+                {selectedDate && (
+                  <div className="px-3 pb-3">
+                    <button
+                      onClick={() => setSelectedDate(undefined)}
+                      className="w-full text-xs text-muted-foreground hover:text-foreground py-2 rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      Reset tanggal
+                    </button>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
+
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="px-4 py-3 rounded-xl bg-muted/20 text-sm text-foreground bg-transparent outline-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all"
+            >
+              <option value="Semua Status" className="bg-background text-foreground">Semua Status</option>
+              {statusOptions.map((s) => (
+                <option key={s} value={s} className="bg-background text-foreground">{s}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -196,7 +216,7 @@ export default function GuruAbsenPage() {
                       <span className="h-7 w-7 rounded-lg bg-muted/50 flex items-center justify-center text-xs font-bold text-muted-foreground">{row.no}</span>
                     </td>
                     <td className="py-4 px-5 font-mono text-xs text-foreground">{row.nisn}</td>
-                    <td className="py-4 px-5 font-medium text-foreground">{<td className="py-4 px-5 font-medium text-foreground">{row.studentName}</td>}</td>
+                    <td className="py-4 px-5 font-medium text-foreground">{row.studentName}</td>
                     <td className="py-4 px-5 text-foreground">{row.subject}</td>
                     <td className="py-4 px-5 text-foreground">{row.teacherName}</td>
                     <td className="py-4 px-5">

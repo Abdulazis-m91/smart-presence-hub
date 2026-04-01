@@ -45,6 +45,7 @@ export default function AdminGuruPage() {
   const [levelFilter, setLevelFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(0);
+  const [showModal, setShowModal] = useState(false);
 
   const filtered = guruData.filter((row) => {
     const matchSearch = !search || row.name.toLowerCase().includes(search.toLowerCase()) || row.nip.includes(search);

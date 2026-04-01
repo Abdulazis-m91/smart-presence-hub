@@ -1,5 +1,6 @@
 import { useAuth } from "@/lib/auth-context";
 import GuruDashboard from "./GuruDashboard";
+import PetugasDashboard from "./PetugasDashboard";
 import { motion } from "framer-motion";
 import { Users, ClipboardCheck, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react";
 

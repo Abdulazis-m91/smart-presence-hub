@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { CalendarIcon, Clock, Search, BarChart3, Download, FileText } from "lucide-react";
+import { CalendarIcon, Clock, Search, BarChart3, Download, UserCheck, AlertTriangle, UserX } from "lucide-react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -36,7 +36,6 @@ export default function PetugasLaporanPage() {
   const [classFilter, setClassFilter] = useState("");
 
   const selectedDateStr = date ? format(date, "yyyy-MM-dd") : "";
-
   const availableClasses = levelFilter === "SMP" ? smpClasses : levelFilter === "SMA" ? smaClasses : [...smpClasses, ...smaClasses];
 
   const filtered = attendanceRecords.filter((row) => {
@@ -52,7 +51,6 @@ export default function PetugasLaporanPage() {
   const totalIzin = filtered.filter((r) => r.status === "Izin").length;
 
   const handleExportPDF = () => {
-    // Simulate PDF export
     const printContent = `
       <html><head><title>Laporan Kehadiran</title>
       <style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:12px}th{background:#f5f5f5;font-weight:600}</style></head>
@@ -68,6 +66,12 @@ export default function PetugasLaporanPage() {
       w.print();
     }
   };
+
+  const summaryCards = [
+    { label: "Hadir", value: totalHadir, icon: UserCheck, gradient: "from-emerald-500 to-teal-500" },
+    { label: "Terlambat", value: totalTerlambat, icon: AlertTriangle, gradient: "from-amber-500 to-orange-500" },
+    { label: "Izin", value: totalIzin, icon: UserX, gradient: "from-rose-500 to-red-500" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -85,14 +89,38 @@ export default function PetugasLaporanPage() {
         </button>
       </motion.div>
 
-      {/* Main container */}
+      {/* Summary cards - OUTSIDE the main container */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        {summaryCards.map((s, i) => (
+          <motion.div
+            key={s.label}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08 }}
+            className="group relative glass rounded-2xl p-6 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1"
+          >
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${s.gradient} opacity-60 group-hover:opacity-100 transition-opacity`} />
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">{s.label}</p>
+                <p className="text-3xl font-bold text-foreground mt-2 tracking-tight">{s.value}</p>
+              </div>
+              <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${s.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                <s.icon className="h-6 w-6 text-white" strokeWidth={1.5} />
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Main container: Filter + Table ONLY */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+        transition={{ delay: 0.2 }}
         className="glass rounded-2xl overflow-hidden"
       >
-        {/* Filter section inside container */}
+        {/* Filter section */}
         <div className="p-5 border-b border-border/30">
           <div className="flex flex-wrap gap-3 items-center">
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 flex-1 min-w-[200px] max-w-sm focus-within:ring-2 focus-within:ring-primary/20 transition-all">
@@ -157,20 +185,6 @@ export default function PetugasLaporanPage() {
               ))}
             </select>
           </div>
-        </div>
-
-        {/* Quick stats */}
-        <div className="grid grid-cols-3 gap-4 p-5 border-b border-border/30">
-          {[
-            { label: "Hadir", value: totalHadir, color: "text-secondary" },
-            { label: "Terlambat", value: totalTerlambat, color: "text-amber-600" },
-            { label: "Izin", value: totalIzin, color: "text-destructive" },
-          ].map((s) => (
-            <div key={s.label} className="rounded-xl bg-muted/20 p-4 text-center">
-              <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-              <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
-            </div>
-          ))}
         </div>
 
         {/* Report table */}

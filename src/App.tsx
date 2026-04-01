@@ -35,7 +35,10 @@ const App = () => (
               <Route path="guru-siswa" element={<GuruSiswaPage />} />
               <Route path="guru-absen" element={<GuruAbsenPage />} />
               <Route path="perizinan" element={<PerizinanPage />} />
-              <Route path="absensi" element={<PlaceholderPage />} />
+              <Route path="absensi" element={<PetugasAbsensiPage />} />
+              <Route path="petugas-perizinan" element={<PetugasPerizinanPage />} />
+              <Route path="petugas-jadwal" element={<PetugasJadwalPage />} />
+              <Route path="petugas-laporan" element={<PetugasLaporanPage />} />
               <Route path="siswa" element={<PlaceholderPage />} />
               <Route path="berita" element={<PlaceholderPage />} />
               <Route path="galeri" element={<PlaceholderPage />} />

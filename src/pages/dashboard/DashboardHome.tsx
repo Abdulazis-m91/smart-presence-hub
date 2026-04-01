@@ -194,5 +194,6 @@ function AdminDashboard() {
 export default function DashboardHome() {
   const { user } = useAuth();
   if (user?.role === "guru") return <GuruDashboard />;
+  if (user?.role === "petugas") return <PetugasDashboard />;
   return <AdminDashboard />;
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Filter, Plus, Download, Eye, Edit3, Trash2, Users, ChevronRight } from "lucide-react";
+import TambahGuruModal from "@/components/dashboard/TambahGuruModal";
 
 function AnimatedNumber({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);
@@ -44,6 +45,7 @@ export default function AdminGuruPage() {
   const [levelFilter, setLevelFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(0);
+  const [showModal, setShowModal] = useState(false);
 
   const filtered = guruData.filter((row) => {
     const matchSearch = !search || row.name.toLowerCase().includes(search.toLowerCase()) || row.nip.includes(search);
@@ -78,7 +80,7 @@ export default function AdminGuruPage() {
           <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass text-sm font-medium text-foreground hover:ring-2 hover:ring-primary/20 transition-all">
             <Download className="h-4 w-4" /><span className="hidden sm:inline">Export PDF</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
             <Plus className="h-4 w-4" /><span className="hidden sm:inline">Tambah Guru</span>
           </button>
         </div>
@@ -201,6 +203,8 @@ export default function AdminGuruPage() {
           </div>
         )}
       </motion.div>
+
+      <TambahGuruModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

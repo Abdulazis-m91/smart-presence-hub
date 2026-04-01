@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Filter, Plus, Download, Eye, Edit3, Trash2, Users, ChevronRight } from "lucide-react";
+import TambahSiswaModal from "@/components/dashboard/TambahSiswaModal";
 
 function AnimatedNumber({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);
@@ -44,6 +45,7 @@ export default function AdminSiswaPage() {
   const [levelFilter, setLevelFilter] = useState("");
   const [classFilter, setClassFilter] = useState("");
   const [page, setPage] = useState(0);
+  const [showModal, setShowModal] = useState(false);
 
   const availableClasses = levelFilter === "SMP" ? smpClasses : levelFilter === "SMA" ? smaClasses : [...smpClasses, ...smaClasses];
 
@@ -77,7 +79,7 @@ export default function AdminSiswaPage() {
             <Download className="h-4 w-4" />
             <span className="hidden sm:inline">Export PDF</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Tambah Siswa</span>
           </button>
@@ -197,6 +199,8 @@ export default function AdminSiswaPage() {
           </div>
         )}
       </motion.div>
+
+      <TambahSiswaModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

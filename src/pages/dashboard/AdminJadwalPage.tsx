@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, Users, Edit3, Plus } from "lucide-react";
+import TambahJadwalModal from "@/components/dashboard/TambahJadwalModal";
 
 const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
@@ -74,6 +75,7 @@ const smaSchedule: Record<string, ScheduleItem[]> = {
 
 export default function AdminJadwalPage() {
   const [tab, setTab] = useState<"smp" | "sma">("smp");
+  const [showModal, setShowModal] = useState(false);
   const schedule = tab === "smp" ? smpSchedule : smaSchedule;
 
   return (
@@ -83,7 +85,7 @@ export default function AdminJadwalPage() {
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Jadwal Pelajaran</h1>
           <p className="text-muted-foreground mt-1">Kelola jadwal mengajar guru per hari</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shrink-0 shadow-lg shadow-primary/20">
+        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shrink-0 shadow-lg shadow-primary/20">
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Tambah Jadwal</span>
         </button>
@@ -151,6 +153,8 @@ export default function AdminJadwalPage() {
           );
         })}
       </div>
+
+      <TambahJadwalModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

@@ -11,6 +11,8 @@ import DashboardHome from "./pages/dashboard/DashboardHome";
 import JadwalPage from "./pages/dashboard/JadwalPage";
 import PerizinanPage from "./pages/dashboard/PerizinanPage";
 import PlaceholderPage from "./pages/dashboard/PlaceholderPage";
+import GuruSiswaPage from "./pages/dashboard/GuruSiswaPage";
+import GuruAbsenPage from "./pages/dashboard/GuruAbsenPage";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
               <Route path="jadwal" element={<JadwalPage />} />
+              <Route path="guru-siswa" element={<GuruSiswaPage />} />
+              <Route path="guru-absen" element={<GuruAbsenPage />} />
               <Route path="perizinan" element={<PerizinanPage />} />
               <Route path="absensi" element={<PlaceholderPage />} />
               <Route path="siswa" element={<PlaceholderPage />} />

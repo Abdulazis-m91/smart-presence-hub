@@ -11,12 +11,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/dashboard/jadwal": "Jadwal Mengajar",
+  "/dashboard/jadwal": "Jadwal Pelajaran",
   "/dashboard/perizinan": "Perizinan",
   "/dashboard/siswa": "Data Siswa",
+  "/dashboard/guru": "Data Guru",
   "/dashboard/absensi": "Absensi",
   "/dashboard/guru-siswa": "Data Siswa",
   "/dashboard/guru-absen": "Absensi",
+  "/dashboard/guru-jadwal": "Jadwal Mengajar",
   "/dashboard/berita": "Berita",
   "/dashboard/galeri": "Galeri",
   "/dashboard/laporan": "Laporan",

@@ -21,7 +21,7 @@ interface MenuItem {
 const menusByRole: Record<UserRole, MenuItem[]> = {
   guru: [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-    { title: "Jadwal Mengajar", url: "/dashboard/jadwal", icon: Calendar },
+    { title: "Jadwal Mengajar", url: "/dashboard/guru-jadwal", icon: Calendar },
     { title: "Siswa", url: "/dashboard/guru-siswa", icon: Users },
     { title: "Absen", url: "/dashboard/guru-absen", icon: ClipboardCheck },
     { title: "Perizinan", url: "/dashboard/perizinan", icon: FileText },

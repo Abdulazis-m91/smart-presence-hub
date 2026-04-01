@@ -17,6 +17,12 @@ import PetugasAbsensiPage from "./pages/dashboard/PetugasAbsensiPage";
 import PetugasPerizinanPage from "./pages/dashboard/PetugasPerizinanPage";
 import PetugasJadwalPage from "./pages/dashboard/PetugasJadwalPage";
 import PetugasLaporanPage from "./pages/dashboard/PetugasLaporanPage";
+import AdminJadwalPage from "./pages/dashboard/AdminJadwalPage";
+import AdminSiswaPage from "./pages/dashboard/AdminSiswaPage";
+import AdminGuruPage from "./pages/dashboard/AdminGuruPage";
+import AdminLaporanPage from "./pages/dashboard/AdminLaporanPage";
+import AdminBeritaPage from "./pages/dashboard/AdminBeritaPage";
+import AdminGaleriPage from "./pages/dashboard/AdminGaleriPage";
 
 const queryClient = new QueryClient();
 
@@ -31,7 +37,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
-              <Route path="jadwal" element={<JadwalPage />} />
+              <Route path="jadwal" element={<AdminJadwalPage />} />
               <Route path="guru-siswa" element={<GuruSiswaPage />} />
               <Route path="guru-absen" element={<GuruAbsenPage />} />
               <Route path="perizinan" element={<PerizinanPage />} />
@@ -39,10 +45,12 @@ const App = () => (
               <Route path="petugas-perizinan" element={<PetugasPerizinanPage />} />
               <Route path="petugas-jadwal" element={<PetugasJadwalPage />} />
               <Route path="petugas-laporan" element={<PetugasLaporanPage />} />
-              <Route path="siswa" element={<PlaceholderPage />} />
-              <Route path="berita" element={<PlaceholderPage />} />
-              <Route path="galeri" element={<PlaceholderPage />} />
-              <Route path="laporan" element={<PlaceholderPage />} />
+              <Route path="siswa" element={<AdminSiswaPage />} />
+              <Route path="guru" element={<AdminGuruPage />} />
+              <Route path="berita" element={<AdminBeritaPage />} />
+              <Route path="galeri" element={<AdminGaleriPage />} />
+              <Route path="laporan" element={<AdminLaporanPage />} />
+              <Route path="guru-jadwal" element={<JadwalPage />} />
               <Route path="petugas" element={<PlaceholderPage />} />
               <Route path="tampilan" element={<PlaceholderPage />} />
             </Route>

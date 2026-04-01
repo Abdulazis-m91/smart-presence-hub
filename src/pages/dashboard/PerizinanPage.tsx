@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Send, FileText, CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Upload, Send, FileText, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 const permissionHistory = [
@@ -16,10 +16,32 @@ const statusConfig: Record<string, { icon: React.ElementType; classes: string }>
   Menunggu: { icon: Clock, classes: "bg-accent text-accent-foreground border border-border" },
 };
 
+function AnimatedNumber({ value }: { value: number }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    const duration = 800;
+    const startTime = Date.now();
+    const tick = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(eased * value));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [value]);
+  return <>{display}</>;
+}
+
 export default function PerizinanPage() {
   const { user } = useAuth();
   const [reason, setReason] = useState("");
   const [dragOver, setDragOver] = useState(false);
+
+  const totalIzin = permissionHistory.length;
+  const disetujui = permissionHistory.filter((p) => p.status === "Disetujui").length;
+  const ditolak = permissionHistory.filter((p) => p.status === "Ditolak").length;
+  const menunggu = permissionHistory.filter((p) => p.status === "Menunggu").length;
 
   return (
     <div className="space-y-8">
@@ -28,27 +50,32 @@ export default function PerizinanPage() {
         <p className="text-muted-foreground mt-1">Ajukan dan kelola izin Anda</p>
       </motion.div>
 
-      {/* Quick stats */}
+      {/* Summary cards - dashboard style */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Total Izin", value: "4", icon: FileText, color: "from-blue-500 to-cyan-500" },
-          { label: "Disetujui", value: "2", icon: CheckCircle2, color: "from-emerald-500 to-teal-500" },
-          { label: "Ditolak", value: "1", icon: XCircle, color: "from-rose-500 to-red-500" },
-          { label: "Menunggu", value: "1", icon: Clock, color: "from-amber-500 to-orange-500" },
+          { label: "Total Izin", value: totalIzin, icon: FileText, gradient: "from-blue-500 to-cyan-500" },
+          { label: "Disetujui", value: disetujui, icon: CheckCircle2, gradient: "from-emerald-500 to-teal-500" },
+          { label: "Ditolak", value: ditolak, icon: XCircle, gradient: "from-rose-500 to-red-500" },
+          { label: "Menunggu", value: menunggu, icon: Clock, gradient: "from-amber-500 to-orange-500" },
         ].map((s, i) => (
           <motion.div
             key={s.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.06 }}
-            className="glass rounded-2xl p-4 flex items-center gap-3 group"
+            className="group relative glass rounded-2xl p-6 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1"
           >
-            <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shrink-0`}>
-              <s.icon className="h-5 w-5 text-white" strokeWidth={1.5} />
-            </div>
-            <div>
-              <p className="text-xl font-bold text-foreground">{s.value}</p>
-              <p className="text-[11px] text-muted-foreground">{s.label}</p>
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${s.gradient} opacity-60 group-hover:opacity-100 transition-opacity`} />
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">{s.label}</p>
+                <p className="text-3xl font-bold text-foreground mt-2 tracking-tight">
+                  <AnimatedNumber value={s.value} />
+                </p>
+              </div>
+              <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                <s.icon className="h-5 w-5 text-white" strokeWidth={1.5} />
+              </div>
             </div>
           </motion.div>
         ))}
@@ -153,9 +180,7 @@ export default function PerizinanPage() {
                   className="p-4 rounded-xl bg-muted/20 hover:bg-muted/40 transition-all duration-300 border border-transparent hover:border-border/50 group"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono text-muted-foreground">{p.date}</span>
-                    </div>
+                    <span className="text-sm font-mono text-muted-foreground">{p.date}</span>
                     <span className={`text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1.5 ${config.classes}`}>
                       <StatusIcon className="h-3 w-3" />
                       {p.status}

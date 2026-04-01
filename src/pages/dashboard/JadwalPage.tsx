@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Calendar, Clock, BookOpen, Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const schedule = [
   { no: 1, name: "Ahmad Fauzi", subject: "Matematika", day: "Senin", class: "XII-A", time: "07:00 - 08:30" },
@@ -18,8 +18,33 @@ const dayColors: Record<string, string> = {
   Jumat: "bg-rose-500/10 text-rose-600 border-rose-500/20",
 };
 
+function AnimatedNumber({ value }: { value: number | string }) {
+  const [display, setDisplay] = useState(0);
+  const numVal = typeof value === "string" ? parseFloat(value) || 0 : value;
+
+  useEffect(() => {
+    let start = 0;
+    const duration = 800;
+    const startTime = Date.now();
+    const tick = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      start = Math.round(eased * numVal);
+      setDisplay(start);
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [numVal]);
+
+  return <>{display}</>;
+}
+
 export default function JadwalPage() {
   const [searchQuery, setSearchQuery] = useState("");
+
+  const totalHours = 7.5;
+  const totalSessions = schedule.length;
 
   return (
     <div className="space-y-8">
@@ -31,8 +56,8 @@ export default function JadwalPage() {
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { icon: Calendar, label: "Total Jadwal", value: "5 Sesi", gradient: "from-blue-500 to-cyan-500" },
-          { icon: Clock, label: "Total Jam", value: "7.5 Jam", gradient: "from-emerald-500 to-teal-500" },
+          { icon: Calendar, label: "Total Jadwal", value: totalSessions, suffix: " Sesi", gradient: "from-blue-500 to-cyan-500" },
+          { icon: Clock, label: "Total Jam", value: totalHours, suffix: " Jam", gradient: "from-emerald-500 to-teal-500" },
           { icon: BookOpen, label: "Mata Pelajaran", value: "Matematika", gradient: "from-violet-500 to-purple-500" },
         ].map((item, i) => (
           <motion.div
@@ -40,43 +65,46 @@ export default function JadwalPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.08 }}
-            className="glass rounded-2xl p-5 flex items-center gap-4 group hover:shadow-lg hover:shadow-primary/5 transition-all duration-500"
+            className="group relative glass rounded-2xl p-6 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1"
           >
-            <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-              <item.icon className="h-6 w-6 text-white" strokeWidth={1.5} />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{item.label}</p>
-              <p className="text-lg font-bold text-foreground">{item.value}</p>
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.gradient} opacity-60 group-hover:opacity-100 transition-opacity`} />
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">{item.label}</p>
+                <p className="text-3xl font-bold text-foreground mt-2 tracking-tight">
+                  {typeof item.value === "number" ? <><AnimatedNumber value={item.value} />{item.suffix}</> : item.value}
+                </p>
+              </div>
+              <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                <item.icon className="h-6 w-6 text-white" strokeWidth={1.5} />
+              </div>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Search bar */}
+      {/* Unified filter + table container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="flex items-center gap-3 px-4 py-3 rounded-xl glass w-full max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all"
-      >
-        <Search className="h-4 w-4 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="Cari jadwal..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
-        />
-      </motion.div>
-
-      {/* Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
         className="glass rounded-2xl overflow-hidden"
       >
+        {/* Filter inside container */}
+        <div className="p-5 border-b border-border/30">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/20 w-full max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Cari jadwal..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
+            />
+          </div>
+        </div>
+
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -88,46 +116,46 @@ export default function JadwalPage() {
             </thead>
             <tbody>
               {schedule
-                .filter((row) => 
-                  !searchQuery || 
+                .filter((row) =>
+                  !searchQuery ||
                   row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                   row.day.toLowerCase().includes(searchQuery.toLowerCase()) ||
                   row.class.toLowerCase().includes(searchQuery.toLowerCase())
                 )
                 .map((row, i) => (
-                <motion.tr
-                  key={row.no}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + i * 0.05 }}
-                  className="border-t border-border/30 hover:bg-muted/20 transition-colors"
-                >
-                  <td className="py-4 px-5">
-                    <span className="h-7 w-7 rounded-lg bg-muted/50 flex items-center justify-center text-xs font-bold text-muted-foreground">{row.no}</span>
-                  </td>
-                  <td className="py-4 px-5 font-medium text-foreground">{row.name}</td>
-                  <td className="py-4 px-5">
-                    <span className="flex items-center gap-1.5">
-                      <BookOpen className="h-3.5 w-3.5 text-primary" />
-                      <span className="text-foreground">{row.subject}</span>
-                    </span>
-                  </td>
-                  <td className="py-4 px-5">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${dayColors[row.day] || "bg-muted text-foreground"}`}>
-                      {row.day}
-                    </span>
-                  </td>
-                  <td className="py-4 px-5">
-                    <span className="px-2.5 py-1 rounded-lg bg-muted/50 text-foreground text-xs font-medium">{row.class}</span>
-                  </td>
-                  <td className="py-4 px-5">
-                    <span className="flex items-center gap-1.5 font-mono text-xs text-foreground">
-                      <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                      {row.time}
-                    </span>
-                  </td>
-                </motion.tr>
-              ))}
+                  <motion.tr
+                    key={row.no}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + i * 0.05 }}
+                    className="border-t border-border/30 hover:bg-muted/20 transition-colors"
+                  >
+                    <td className="py-4 px-5">
+                      <span className="h-7 w-7 rounded-lg bg-muted/50 flex items-center justify-center text-xs font-bold text-muted-foreground">{row.no}</span>
+                    </td>
+                    <td className="py-4 px-5 font-medium text-foreground">{row.name}</td>
+                    <td className="py-4 px-5">
+                      <span className="flex items-center gap-1.5">
+                        <BookOpen className="h-3.5 w-3.5 text-primary" />
+                        <span className="text-foreground">{row.subject}</span>
+                      </span>
+                    </td>
+                    <td className="py-4 px-5">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${dayColors[row.day] || "bg-muted text-foreground"}`}>
+                        {row.day}
+                      </span>
+                    </td>
+                    <td className="py-4 px-5">
+                      <span className="px-2.5 py-1 rounded-lg bg-muted/50 text-foreground text-xs font-medium">{row.class}</span>
+                    </td>
+                    <td className="py-4 px-5">
+                      <span className="flex items-center gap-1.5 font-mono text-xs text-foreground">
+                        <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                        {row.time}
+                      </span>
+                    </td>
+                  </motion.tr>
+                ))}
             </tbody>
           </table>
         </div>

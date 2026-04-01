@@ -31,6 +31,7 @@ export default function DashboardLayout() {
   const { user } = useAuth();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const [profileOpen, setProfileOpen] = useState(false);
 
   if (!user) return <Navigate to="/" replace />;
 

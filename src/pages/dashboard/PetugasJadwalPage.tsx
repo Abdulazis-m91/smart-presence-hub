@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, BookOpen, Clock, Users } from "lucide-react";
+import { Clock, Users } from "lucide-react";
 
 const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
@@ -108,7 +108,7 @@ export default function PetugasJadwalPage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-6 py-2.5 text-sm font-semibold transition-all relative ${
+            className={`px-6 py-2.5 text-sm font-semibold transition-all ${
               tab === t
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -119,11 +119,10 @@ export default function PetugasJadwalPage() {
         ))}
       </motion.div>
 
-      {/* Schedule by day - 3-column grid cards */}
-      <div className="space-y-8">
+      {/* 3-column grid: Row 1 = Senin, Selasa, Rabu | Row 2 = Kamis, Jumat, Sabtu */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {days.map((day, dayIdx) => {
           const items = schedule[day] || [];
-          if (items.length === 0) return null;
 
           return (
             <motion.div
@@ -131,48 +130,40 @@ export default function PetugasJadwalPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 + dayIdx * 0.06 }}
+              className="glass rounded-2xl overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${dayColors[day]} flex items-center justify-center shadow-lg`}>
-                  <Calendar className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-foreground text-lg">{day}</h3>
-                  <p className="text-xs text-muted-foreground">{items.length} sesi mengajar</p>
-                </div>
+              {/* Day header */}
+              <div className={`bg-gradient-to-r ${dayColors[day]} px-5 py-3.5`}>
+                <h3 className="font-bold text-white text-base uppercase tracking-wide">{day}</h3>
+                <p className="text-white/80 text-xs mt-0.5 flex items-center gap-1">
+                  <Users className="h-3 w-3" />
+                  {items.length} guru mengajar
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 + dayIdx * 0.06 + i * 0.04 }}
-                    className="glass rounded-2xl p-5 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-300 group"
-                  >
-                    <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r ${dayColors[day]} opacity-0 group-hover:opacity-60 transition-opacity`} />
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${dayColors[day]} flex items-center justify-center shrink-0`}>
-                        <span className="text-white font-bold text-sm">{item.teacher.charAt(0)}</span>
-                      </div>
+              {/* Teacher list */}
+              <div className="divide-y divide-border/30">
+                {items.length === 0 ? (
+                  <div className="p-5 text-center text-muted-foreground text-sm">
+                    Tidak ada jadwal
+                  </div>
+                ) : (
+                  items.map((item, i) => (
+                    <div key={i} className="flex items-center justify-between px-5 py-3.5 hover:bg-muted/10 transition-colors">
                       <div className="min-w-0">
-                        <p className="font-semibold text-foreground text-sm truncate">{item.teacher}</p>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <BookOpen className="h-3 w-3" /> {item.subject}
+                        <p className="font-medium text-foreground text-sm truncate">{item.teacher}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{item.subject}</p>
+                      </div>
+                      <div className="text-right shrink-0 ml-3">
+                        <p className="text-sm font-medium text-foreground">{item.class}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1 justify-end">
+                          <Clock className="h-3 w-3" />
+                          {item.time}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/30">
-                      <span className="px-2.5 py-1 rounded-lg bg-muted/50 text-foreground text-xs font-medium flex items-center gap-1">
-                        <Users className="h-3 w-3" /> {item.class}
-                      </span>
-                      <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-                        <Clock className="h-3.5 w-3.5" /> {item.time}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
+                  ))
+                )}
               </div>
             </motion.div>
           );

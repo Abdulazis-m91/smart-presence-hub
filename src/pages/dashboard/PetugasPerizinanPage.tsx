@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Users, UserCheck, TrendingUp, UserX, FileText, Download, Clock } from "lucide-react";
+import { Search, Users, UserCheck, TrendingUp, UserX, Download } from "lucide-react";
 
 const summaryCards = [
   { label: "Guru Terjadwal Hari Ini", value: "32", icon: Users, gradient: "from-blue-500 to-cyan-500" },
@@ -32,10 +32,10 @@ export default function PetugasPerizinanPage() {
     <div className="space-y-8">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Perizinan Guru</h1>
-        <p className="text-muted-foreground mt-1">Daftar guru yang izin hari ini — disetujui otomatis</p>
+        <p className="text-muted-foreground mt-1">Daftar guru yang izin hari ini</p>
       </motion.div>
 
-      {/* Summary cards - now 4 cards */}
+      {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {summaryCards.map((s, i) => (
           <motion.div
@@ -59,7 +59,7 @@ export default function PetugasPerizinanPage() {
         ))}
       </div>
 
-      {/* Section title */}
+      {/* Single container: title + filters + table */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -68,10 +68,9 @@ export default function PetugasPerizinanPage() {
       >
         <div className="bg-gradient-to-r from-rose-500 to-red-500 px-6 py-4">
           <h2 className="text-lg font-bold text-white tracking-wide">DAFTAR PERIZINAN GURU SEKOLAH</h2>
-          <p className="text-white/80 text-sm mt-0.5">Izin disetujui secara otomatis — tidak memerlukan alur persetujuan</p>
         </div>
 
-        {/* Filters inside container */}
+        {/* Filters */}
         <div className="p-5 border-b border-border/30">
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 flex-1 min-w-[200px] max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all">

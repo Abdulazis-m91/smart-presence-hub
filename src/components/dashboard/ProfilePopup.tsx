@@ -46,32 +46,22 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
     <AnimatePresence>
       {open && (
         <>
-          {/* Dimmed backdrop overlay */}
+          {/* Dimmed backdrop + centered container */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={onClose}
-          />
-
-          {/* Centered popup */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.92 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
-            <div className="w-full max-w-sm bg-background rounded-2xl shadow-2xl shadow-black/20 border border-border/50 overflow-hidden pointer-events-auto">
-              {/* Close button */}
-              <button
-                onClick={onClose}
-                className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors z-10"
-              >
-                <X className="h-4 w-4" />
-              </button>
-
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="w-full max-w-sm bg-background rounded-2xl shadow-2xl shadow-black/20 border border-border/50 overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Top section - Photo & Name */}
               <div className="pt-8 pb-5 px-6 text-center relative">
                 <button

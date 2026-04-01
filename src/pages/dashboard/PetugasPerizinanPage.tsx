@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Users, UserCheck, TrendingUp, FileText, Download, Clock } from "lucide-react";
+import { Search, Users, UserCheck, TrendingUp, UserX, FileText, Download, Clock } from "lucide-react";
 
 const summaryCards = [
   { label: "Guru Terjadwal Hari Ini", value: "32", icon: Users, gradient: "from-blue-500 to-cyan-500" },
-  { label: "Guru Izin", value: "4", icon: FileText, gradient: "from-rose-500 to-red-500" },
-  { label: "Kehadiran Guru", value: "87.5%", icon: TrendingUp, gradient: "from-emerald-500 to-teal-500" },
+  { label: "Guru Hadir Hari Ini", value: "28", icon: UserCheck, gradient: "from-emerald-500 to-teal-500" },
+  { label: "Guru Izin", value: "4", icon: UserX, gradient: "from-rose-500 to-red-500" },
+  { label: "Kehadiran Guru", value: "87.5%", icon: TrendingUp, gradient: "from-violet-500 to-purple-500" },
 ];
 
 const permissionList = [
-  { no: 1, photo: "HB", name: "Hasan Basri", nip: "198601052010011005", subject: "Kimia", class: "XII-A, XI-B", reason: "Sakit demam tinggi", file: "surat_sakit_hasan.pdf" },
-  { no: 2, photo: "LK", name: "Lina Kartika", nip: "199108152013012008", subject: "Geografi", class: "X-A, X-B", reason: "Keperluan keluarga", file: "surat_izin_lina.pdf" },
-  { no: 3, photo: "JP", name: "Joko Prasetyo", nip: "198804102012011009", subject: "Penjaskes", class: "XI-A, XII-B", reason: "Pelatihan luar kota", file: "surat_tugas_joko.pdf" },
+  { no: 1, photo: "HB", name: "Hasan Basri", nip: "198601052010011005", subject: "Kimia", class: "XII-A", reason: "Sakit demam tinggi", file: "surat_sakit_hasan.pdf" },
+  { no: 2, photo: "LK", name: "Lina Kartika", nip: "199108152013012008", subject: "Geografi", class: "X-A", reason: "Keperluan keluarga", file: "surat_izin_lina.pdf" },
+  { no: 3, photo: "JP", name: "Joko Prasetyo", nip: "198804102012011009", subject: "Penjaskes", class: "XI-A", reason: "Pelatihan luar kota", file: "surat_tugas_joko.pdf" },
   { no: 4, photo: "MA", name: "Maya Anggraini", nip: "199305202014012010", subject: "Seni Budaya", class: "X-A", reason: "Acara keluarga", file: "surat_izin_maya.pdf" },
 ];
 
@@ -34,8 +35,8 @@ export default function PetugasPerizinanPage() {
         <p className="text-muted-foreground mt-1">Daftar guru yang izin hari ini — disetujui otomatis</p>
       </motion.div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      {/* Summary cards - now 4 cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {summaryCards.map((s, i) => (
           <motion.div
             key={s.label}
@@ -58,42 +59,45 @@ export default function PetugasPerizinanPage() {
         ))}
       </div>
 
-      {/* Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.25 }}
-        className="flex flex-wrap gap-3"
-      >
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass flex-1 min-w-[200px] max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-          <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-          <input
-            type="text"
-            placeholder="Cari nama atau NIP..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
-          />
-        </div>
-        <select
-          value={classFilter}
-          onChange={(e) => setClassFilter(e.target.value)}
-          className="px-4 py-2.5 rounded-xl glass text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
-        >
-          <option value="">Semua Kelas</option>
-          {classes.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-      </motion.div>
-
-      {/* Table */}
+      {/* Section title */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
         className="glass rounded-2xl overflow-hidden"
       >
+        <div className="bg-gradient-to-r from-rose-500 to-red-500 px-6 py-4">
+          <h2 className="text-lg font-bold text-white tracking-wide">DAFTAR PERIZINAN GURU SEKOLAH</h2>
+          <p className="text-white/80 text-sm mt-0.5">Izin disetujui secara otomatis — tidak memerlukan alur persetujuan</p>
+        </div>
+
+        {/* Filters inside container */}
+        <div className="p-5 border-b border-border/30">
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 flex-1 min-w-[200px] max-w-md focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+              <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+              <input
+                type="text"
+                placeholder="Cari nama atau NIP..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
+              />
+            </div>
+            <select
+              value={classFilter}
+              onChange={(e) => setClassFilter(e.target.value)}
+              className="px-4 py-2.5 rounded-xl bg-muted/30 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+            >
+              <option value="">Semua Kelas</option>
+              {classes.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -151,11 +155,6 @@ export default function PetugasPerizinanPage() {
           </table>
         </div>
       </motion.div>
-
-      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-        <Clock className="h-3.5 w-3.5" />
-        Izin disetujui secara otomatis — tidak memerlukan alur persetujuan
-      </p>
     </div>
   );
 }

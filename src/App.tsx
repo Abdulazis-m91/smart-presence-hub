@@ -23,6 +23,8 @@ import AdminGuruPage from "./pages/dashboard/AdminGuruPage";
 import AdminLaporanPage from "./pages/dashboard/AdminLaporanPage";
 import AdminBeritaPage from "./pages/dashboard/AdminBeritaPage";
 import AdminGaleriPage from "./pages/dashboard/AdminGaleriPage";
+import TampilanPage from "./pages/dashboard/TampilanPage";
+import AkunPage from "./pages/dashboard/AkunPage";
 
 const queryClient = new QueryClient();
 

@@ -114,7 +114,7 @@ export default function AdminLaporanPage() {
 
       {/* Filter + Table */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass rounded-2xl overflow-hidden">
-        <div className="p-5 border-b border-border/30">
+        <div className="p-5 border-b border-border/30 space-y-3">
           <div className="flex flex-wrap gap-3 items-center">
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 flex-1 min-w-[200px] max-w-sm focus-within:ring-2 focus-within:ring-primary/20 transition-all">
               <Search className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -123,7 +123,7 @@ export default function AdminLaporanPage() {
             </div>
             <Popover>
               <PopoverTrigger asChild>
-                <button className={cn("flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 text-sm font-medium transition-all hover:ring-2 hover:ring-primary/20", !date && "text-muted-foreground")}>
+                <button className={cn("flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 text-sm font-medium transition-all hover:ring-2 hover:ring-primary/20 shrink-0", !date && "text-muted-foreground")}>
                   <CalendarIcon className="h-4 w-4" />
                   {date ? format(date, "dd MMM yyyy", { locale: localeId }) : "Semua Tanggal"}
                 </button>
@@ -133,17 +133,19 @@ export default function AdminLaporanPage() {
               </PopoverContent>
             </Popover>
             {date && (
-              <button onClick={() => setDate(undefined)} className="px-3 py-2.5 rounded-xl bg-muted/30 text-xs text-muted-foreground hover:text-foreground transition-all">Reset Tanggal</button>
+              <button onClick={() => setDate(undefined)} className="px-3 py-2.5 rounded-xl bg-muted/30 text-xs text-muted-foreground hover:text-foreground transition-all shrink-0">Reset Tanggal</button>
             )}
+          </div>
+          <div className="flex flex-wrap gap-3 items-center">
             <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}
-              className="px-4 py-2.5 rounded-xl bg-muted/30 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+              className="px-4 py-2.5 rounded-xl bg-muted/30 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer shrink-0">
               <option value="">Semua Role</option>
               <option value="Siswa">Siswa</option>
               <option value="Guru">Guru</option>
               <option value="Staff">Staff</option>
             </select>
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2.5 rounded-xl bg-muted/30 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+              className="px-4 py-2.5 rounded-xl bg-muted/30 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer shrink-0">
               <option value="">Semua Status</option>
               <option value="Terlambat">Terlambat</option>
               <option value="Tidak Hadir">Tidak Hadir</option>
@@ -151,7 +153,7 @@ export default function AdminLaporanPage() {
               <option value="Hadir">Hadir</option>
             </select>
             <select value={levelFilter} onChange={(e) => { setLevelFilter(e.target.value); setClassFilter(""); }}
-              className="px-4 py-2.5 rounded-xl bg-muted/30 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+              className="px-4 py-2.5 rounded-xl bg-muted/30 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer shrink-0">
               <option value="">Semua Jenjang</option>
               <option value="SMP">SMP</option>
               <option value="SMA">SMA</option>
@@ -161,7 +163,7 @@ export default function AdminLaporanPage() {
               onChange={(e) => setClassFilter(e.target.value)}
               disabled={!levelFilter}
               className={cn(
-                "px-4 py-2.5 rounded-xl bg-muted/30 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer",
+                "px-4 py-2.5 rounded-xl bg-muted/30 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer shrink-0",
                 !levelFilter ? "text-muted-foreground/50 cursor-not-allowed opacity-50" : "text-foreground"
               )}
             >

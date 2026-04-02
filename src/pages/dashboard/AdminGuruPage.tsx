@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Filter, Plus, Download, Eye, Edit3, Trash2, Users, ChevronRight } from "lucide-react";
-import TambahGuruModal from "@/components/dashboard/TambahGuruModal";
+import TambahGuruModal, { type GuruData } from "@/components/dashboard/TambahGuruModal";
 
 function AnimatedNumber({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);
@@ -46,6 +46,7 @@ export default function AdminGuruPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [editData, setEditData] = useState<GuruData | null>(null);
 
   const filtered = guruData.filter((row) => {
     const matchSearch = !search || row.name.toLowerCase().includes(search.toLowerCase()) || row.nip.includes(search);
@@ -168,7 +169,7 @@ export default function AdminGuruPage() {
                     <td className="py-3.5 px-5">
                       <div className="flex items-center gap-1">
                         <button className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"><Eye className="h-4 w-4" /></button>
-                        <button className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors"><Edit3 className="h-4 w-4" /></button>
+                        <button onClick={() => { setEditData({ nip: row.nip, name: row.name, status: row.status, subject: row.subject, level: row.level, email: row.email, wa: row.wa }); setShowModal(true); }} className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors"><Edit3 className="h-4 w-4" /></button>
                         <button className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
                       </div>
                     </td>
@@ -204,7 +205,7 @@ export default function AdminGuruPage() {
         )}
       </motion.div>
 
-      <TambahGuruModal open={showModal} onClose={() => setShowModal(false)} />
+      <TambahGuruModal open={showModal} onClose={() => { setShowModal(false); setEditData(null); }} editData={editData} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload, User } from "lucide-react";
 import { z } from "zod";
@@ -48,6 +48,18 @@ export default function TambahSiswaModal({ open, onClose, editData }: Props) {
       rfid: editData.rfid,
     } : { nisn: "", name: "", level: undefined, class: "", rfid: "" },
   });
+
+  useEffect(() => {
+    if (open) {
+      if (editData) {
+        reset({ nisn: editData.nisn, name: editData.name, level: editData.level, class: editData.class, rfid: editData.rfid });
+        setPhotoPreview(editData.photo || null);
+      } else {
+        reset({ nisn: "", name: "", level: undefined, class: "", rfid: "" });
+        setPhotoPreview(null);
+      }
+    }
+  }, [open, editData, reset]);
 
   const level = watch("level");
   const classes = level === "SMP" ? smpClasses : level === "SMA" ? smaClasses : [];

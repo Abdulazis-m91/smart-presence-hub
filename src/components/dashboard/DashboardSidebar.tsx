@@ -158,9 +158,13 @@ export default function DashboardSidebar() {
             <div className={`rounded-2xl bg-gradient-to-r ${roleColors[user.role]} p-[1px]`}>
               <div className="rounded-2xl bg-sidebar p-3">
                 <div className="flex items-center gap-3">
-                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${roleColors[user.role]} flex items-center justify-center text-white font-bold text-sm shrink-0`}>
-                    {user.name.charAt(0)}
-                  </div>
+                  {user.photo_url ? (
+                    <img src={user.photo_url} alt={user.name} className="h-10 w-10 rounded-full object-cover shrink-0 ring-2 ring-white/20" />
+                  ) : (
+                    <div className={`h-10 w-10 rounded-full bg-gradient-to-br ${roleColors[user.role]} flex items-center justify-center text-white font-bold text-sm shrink-0`}>
+                      {user.name.charAt(0)}
+                    </div>
+                  )}
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-sidebar-accent-foreground truncate">{user.name}</p>
                     <p className="text-[11px] text-sidebar-foreground/50">{roleLabels[user.role]}</p>

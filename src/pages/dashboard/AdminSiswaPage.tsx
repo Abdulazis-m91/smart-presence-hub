@@ -46,6 +46,7 @@ export default function AdminSiswaPage() {
   const [classFilter, setClassFilter] = useState("");
   const [page, setPage] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [editData, setEditData] = useState<SiswaData | null>(null);
 
   const availableClasses = levelFilter === "SMP" ? smpClasses : levelFilter === "SMA" ? smaClasses : [...smpClasses, ...smaClasses];
 

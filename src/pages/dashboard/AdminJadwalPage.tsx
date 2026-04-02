@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Clock, Users, Edit3, Plus, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Clock, Users, Edit3, Plus, Trash2, X } from "lucide-react";
 import TambahJadwalModal from "@/components/dashboard/TambahJadwalModal";
 import { toast } from "sonner";
 

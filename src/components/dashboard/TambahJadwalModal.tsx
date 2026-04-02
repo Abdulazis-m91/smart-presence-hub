@@ -1,3 +1,4 @@
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronDown, Check } from "lucide-react";
 import { z } from "zod";

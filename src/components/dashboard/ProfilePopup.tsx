@@ -71,9 +71,12 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
                 >
                   <X className="h-4 w-4" />
                 </button>
-                <div className="h-20 w-20 rounded-2xl gradient-primary flex items-center justify-center text-primary-foreground text-2xl font-bold mx-auto shadow-lg">
-                  {user.name.charAt(0)}
-                </div>
+                <Avatar className="h-20 w-20 rounded-2xl shadow-lg mx-auto">
+                  <AvatarImage src={user.photo_url} alt={user.name} className="object-cover rounded-2xl" />
+                  <AvatarFallback className="rounded-2xl gradient-primary text-primary-foreground text-2xl font-bold">
+                    {user.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
                 <h3 className="text-lg font-bold text-foreground mt-4">{user.name}</h3>
                 <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
                   <BookOpen className="h-3.5 w-3.5" />

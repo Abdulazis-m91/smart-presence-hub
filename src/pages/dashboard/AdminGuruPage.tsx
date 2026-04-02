@@ -169,7 +169,7 @@ export default function AdminGuruPage() {
                     <td className="py-3.5 px-5">
                       <div className="flex items-center gap-1">
                         <button className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"><Eye className="h-4 w-4" /></button>
-                        <button className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors"><Edit3 className="h-4 w-4" /></button>
+                        <button onClick={() => { setEditData({ nip: row.nip, name: row.name, status: row.status, subject: row.subject, level: row.level, email: row.email, wa: row.wa }); setShowModal(true); }} className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors"><Edit3 className="h-4 w-4" /></button>
                         <button className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
                       </div>
                     </td>

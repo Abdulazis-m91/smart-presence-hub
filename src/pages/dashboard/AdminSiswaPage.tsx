@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Filter, Plus, Download, Eye, Edit3, Trash2, Users, ChevronRight, X } from "lucide-react";
+import DeleteConfirmModal from "@/components/dashboard/DeleteConfirmModal";
 import TambahSiswaModal, { type SiswaData } from "@/components/dashboard/TambahSiswaModal";
 import { toast } from "sonner";
 

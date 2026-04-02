@@ -54,7 +54,8 @@ const App = () => (
               <Route path="laporan" element={<AdminLaporanPage />} />
               <Route path="guru-jadwal" element={<JadwalPage />} />
               <Route path="petugas" element={<PlaceholderPage />} />
-              <Route path="tampilan" element={<PlaceholderPage />} />
+              <Route path="tampilan" element={<TampilanPage />} />
+              <Route path="akun" element={<AkunPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

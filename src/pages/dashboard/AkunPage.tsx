@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Search, Plus, Eye, Pencil, Trash2, X, Upload, User } from "lucide-react";
+import { Users, Search, Plus, Eye, Pencil, Trash2, X, Upload, User, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,23 +8,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import DeleteConfirmModal from "@/components/dashboard/DeleteConfirmModal";
 import { toast } from "sonner";
+import { useProfiles } from "@/hooks/use-data";
+import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
-interface Account {
+type AppRole = "guru" | "petugas" | "admin" | "developer";
+
+interface ProfileRow {
   id: string;
-  photo: string;
+  user_id: string;
   name: string;
-  role: "guru" | "petugas" | "admin" | "developer";
   email: string;
-  whatsapp: string;
-  password: string;
+  role: AppRole;
+  photo_url: string | null;
+  whatsapp: string | null;
 }
-
-const initialAccounts: Account[] = [
-  { id: "1", photo: "", name: "Ahmad Fauzi", role: "guru", email: "guru@school.id", whatsapp: "081234567890", password: "123456" },
-  { id: "2", photo: "", name: "Siti Aminah", role: "petugas", email: "petugas@school.id", whatsapp: "081234567891", password: "123456" },
-  { id: "3", photo: "", name: "Hasan Basri", role: "admin", email: "admin@school.id", whatsapp: "081234567892", password: "123456" },
-  { id: "4", photo: "", name: "Abdul Azis F", role: "developer", email: "abdulazisf2000@gmail.com", whatsapp: "081234567893", password: "Jquerym91" },
-];
 
 const roleColors: Record<string, string> = {
   guru: "bg-blue-500/10 text-blue-600 border-blue-500/20",
@@ -41,23 +40,28 @@ const roleLabels: Record<string, string> = {
 };
 
 export default function AkunPage() {
-  const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
+  const { data: profiles, isLoading } = useProfiles();
+  const { session } = useAuth();
+  const qc = useQueryClient();
+
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [viewModal, setViewModal] = useState<Account | null>(null);
-  const [editTarget, setEditTarget] = useState<Account | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Account | null>(null);
+  const [viewModal, setViewModal] = useState<ProfileRow | null>(null);
+  const [editTarget, setEditTarget] = useState<ProfileRow | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ProfileRow | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // Form state
-  const [form, setForm] = useState({ photo: "", name: "", role: "guru" as Account["role"], email: "", whatsapp: "", password: "" });
+  const [form, setForm] = useState({ photo_url: "", name: "", role: "guru" as AppRole, email: "", whatsapp: "", password: "" });
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
+  const accounts = (profiles as ProfileRow[] | undefined) ?? [];
   const filtered = accounts.filter((a) =>
     a.name.toLowerCase().includes(search.toLowerCase()) || a.email.toLowerCase().includes(search.toLowerCase())
   );
 
   const resetForm = () => {
-    setForm({ photo: "", name: "", role: "guru", email: "", whatsapp: "", password: "" });
+    setForm({ photo_url: "", name: "", role: "guru", email: "", whatsapp: "", password: "" });
     setPhotoPreview(null);
     setEditTarget(null);
   };
@@ -67,10 +71,17 @@ export default function AkunPage() {
     setModalOpen(true);
   };
 
-  const openEdit = (acc: Account) => {
+  const openEdit = (acc: ProfileRow) => {
     setEditTarget(acc);
-    setForm({ photo: acc.photo, name: acc.name, role: acc.role, email: acc.email, whatsapp: acc.whatsapp, password: acc.password });
-    setPhotoPreview(acc.photo || null);
+    setForm({
+      photo_url: acc.photo_url || "",
+      name: acc.name,
+      role: acc.role,
+      email: acc.email,
+      whatsapp: acc.whatsapp || "",
+      password: "",
+    });
+    setPhotoPreview(acc.photo_url || null);
     setModalOpen(true);
   };
 
@@ -81,34 +92,82 @@ export default function AkunPage() {
       reader.onloadend = () => {
         const result = reader.result as string;
         setPhotoPreview(result);
-        setForm((prev) => ({ ...prev, photo: result }));
+        setForm((prev) => ({ ...prev, photo_url: result }));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = () => {
-    if (!form.name || !form.email || !form.password) {
-      toast.error("Nama, email, dan password wajib diisi");
-      return;
-    }
-    if (editTarget) {
-      setAccounts((prev) => prev.map((a) => (a.id === editTarget.id ? { ...a, ...form } : a)));
-      toast.success("Akun berhasil diperbarui");
-    } else {
-      const newAcc: Account = { id: String(Date.now()), ...form };
-      setAccounts((prev) => [...prev, newAcc]);
-      toast.success("Akun berhasil ditambahkan");
-    }
-    setModalOpen(false);
-    resetForm();
+  const callManageUser = async (body: Record<string, any>) => {
+    const { data, error } = await supabase.functions.invoke("manage-user", {
+      body,
+    });
+    if (error) throw new Error(error.message);
+    if (data?.error) throw new Error(data.error);
+    return data;
   };
 
-  const handleDelete = () => {
-    if (deleteTarget) {
-      setAccounts((prev) => prev.filter((a) => a.id !== deleteTarget.id));
+  const handleSubmit = async () => {
+    if (!form.name || !form.email) {
+      toast.error("Nama dan email wajib diisi");
+      return;
+    }
+    if (!editTarget && !form.password) {
+      toast.error("Password wajib diisi untuk akun baru");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      if (editTarget) {
+        await callManageUser({
+          action: "update",
+          user_id: editTarget.user_id,
+          name: form.name,
+          email: form.email,
+          role: form.role,
+          whatsapp: form.whatsapp,
+          photo_url: form.photo_url,
+          ...(form.password ? { password: form.password } : {}),
+        });
+        toast.success("Akun berhasil diperbarui");
+      } else {
+        await callManageUser({
+          action: "create",
+          email: form.email,
+          password: form.password,
+          name: form.name,
+          role: form.role,
+          whatsapp: form.whatsapp,
+          photo_url: form.photo_url,
+        });
+        toast.success("Akun berhasil ditambahkan");
+      }
+      qc.invalidateQueries({ queryKey: ["profiles"] });
+      setModalOpen(false);
+      resetForm();
+    } catch (err: any) {
+      toast.error(err.message || "Terjadi kesalahan");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setSubmitting(true);
+    try {
+      await callManageUser({
+        action: "delete",
+        user_id: deleteTarget.user_id,
+      });
       toast.success("Akun berhasil dihapus");
+      qc.invalidateQueries({ queryKey: ["profiles"] });
       setDeleteTarget(null);
+    } catch (err: any) {
+      toast.error(err.message || "Gagal menghapus akun");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -144,14 +203,19 @@ export default function AkunPage() {
               <TableHead>Role</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>WhatsApp</TableHead>
-              <TableHead>Password</TableHead>
               <TableHead className="text-right">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.length === 0 ? (
+            {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">Tidak ada data akun</TableCell>
+                <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+                </TableCell>
+              </TableRow>
+            ) : filtered.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">Tidak ada data akun</TableCell>
               </TableRow>
             ) : (
               filtered.map((acc, idx) => (
@@ -164,8 +228,8 @@ export default function AkunPage() {
                 >
                   <TableCell>
                     <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center overflow-hidden">
-                      {acc.photo ? (
-                        <img src={acc.photo} alt={acc.name} className="h-full w-full object-cover" />
+                      {acc.photo_url ? (
+                        <img src={acc.photo_url} alt={acc.name} className="h-full w-full object-cover" />
                       ) : (
                         <User className="h-5 w-5 text-muted-foreground" />
                       )}
@@ -178,8 +242,7 @@ export default function AkunPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">{acc.email}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{acc.whatsapp}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm font-mono">{"•".repeat(8)}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{acc.whatsapp || "-"}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => setViewModal(acc)}>
@@ -213,7 +276,6 @@ export default function AkunPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bg-card rounded-2xl shadow-2xl border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                {/* Modal Header */}
                 <div className="flex items-center justify-between p-6 border-b border-border">
                   <h2 className="text-lg font-bold text-foreground">{editTarget ? "Edit Akun" : "Tambah Akun"}</h2>
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setModalOpen(false); resetForm(); }}>
@@ -221,7 +283,6 @@ export default function AkunPage() {
                   </Button>
                 </div>
 
-                {/* Modal Body - Horizontal layout */}
                 <div className="p-6 flex gap-6">
                   {/* Left: Photo */}
                   <div className="shrink-0 flex flex-col items-center gap-3">
@@ -247,7 +308,7 @@ export default function AkunPage() {
                     </div>
                     <div>
                       <label className="text-xs font-medium text-muted-foreground mb-1 block">Role *</label>
-                      <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as Account["role"] })}>
+                      <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as AppRole })}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="guru">Guru</SelectItem>
@@ -266,16 +327,18 @@ export default function AkunPage() {
                       <Input value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} placeholder="08xxxxxxxxxx" />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Password *</label>
-                      <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Masukkan password" />
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Password {editTarget ? "(kosongkan jika tidak diubah)" : "*"}</label>
+                      <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder={editTarget ? "Biarkan kosong jika tidak diubah" : "Masukkan password"} />
                     </div>
                   </div>
                 </div>
 
-                {/* Modal Footer */}
                 <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
-                  <Button variant="outline" onClick={() => { setModalOpen(false); resetForm(); }}>Batal</Button>
-                  <Button onClick={handleSubmit}>{editTarget ? "Simpan Perubahan" : "Tambah Akun"}</Button>
+                  <Button variant="outline" onClick={() => { setModalOpen(false); resetForm(); }} disabled={submitting}>Batal</Button>
+                  <Button onClick={handleSubmit} disabled={submitting}>
+                    {submitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                    {editTarget ? "Simpan Perubahan" : "Tambah Akun"}
+                  </Button>
                 </div>
               </div>
             </motion.div>
@@ -304,8 +367,8 @@ export default function AkunPage() {
                 <div className="p-6 space-y-4">
                   <div className="flex items-center gap-4">
                     <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center overflow-hidden">
-                      {viewModal.photo ? (
-                        <img src={viewModal.photo} alt={viewModal.name} className="h-full w-full object-cover" />
+                      {viewModal.photo_url ? (
+                        <img src={viewModal.photo_url} alt={viewModal.name} className="h-full w-full object-cover" />
                       ) : (
                         <User className="h-8 w-8 text-muted-foreground" />
                       )}
@@ -320,13 +383,9 @@ export default function AkunPage() {
                       <span className="text-muted-foreground">Email</span>
                       <span className="font-medium text-foreground">{viewModal.email}</span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-border/50">
+                    <div className="flex justify-between py-2">
                       <span className="text-muted-foreground">WhatsApp</span>
                       <span className="font-medium text-foreground">{viewModal.whatsapp || "-"}</span>
-                    </div>
-                    <div className="flex justify-between py-2">
-                      <span className="text-muted-foreground">Password</span>
-                      <span className="font-mono text-foreground">{"•".repeat(8)}</span>
                     </div>
                   </div>
                 </div>

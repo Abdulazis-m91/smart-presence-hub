@@ -1,3 +1,4 @@
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronDown, Check } from "lucide-react";
 import { z } from "zod";
@@ -49,6 +50,17 @@ export default function TambahJadwalModal({ open, onClose, editData }: Props) {
     resolver: zodResolver(jadwalSchema),
     defaultValues: editData || { day: "", teacher: "", subject: "", level: "", class: "", timeStart: "", timeEnd: "" },
   });
+
+  // Reset form when modal opens with editData
+  React.useEffect(() => {
+    if (open) {
+      if (editData) {
+        reset(editData);
+      } else {
+        reset({ day: "", teacher: "", subject: "", level: "", class: "", timeStart: "", timeEnd: "" });
+      }
+    }
+  }, [open, editData, reset]);
 
   const day = watch("day");
   const teacher = watch("teacher");

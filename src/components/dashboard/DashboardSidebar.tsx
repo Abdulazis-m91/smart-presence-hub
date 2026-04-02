@@ -46,15 +46,16 @@ const menusByRole: Record<UserRole, MenuItem[]> = {
   ],
   developer: [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-    { title: "Jadwal Mengajar", url: "/dashboard/jadwal", icon: Calendar },
+    { title: "Jadwal Pelajaran", url: "/dashboard/jadwal", icon: Calendar },
     { title: "Data Siswa", url: "/dashboard/siswa", icon: Users },
+    { title: "Data Guru", url: "/dashboard/guru", icon: UserCog },
     { title: "Absensi", url: "/dashboard/absensi", icon: ClipboardCheck },
     { title: "Perizinan", url: "/dashboard/perizinan", icon: FileText },
+    { title: "Laporan", url: "/dashboard/laporan", icon: BarChart3 },
     { title: "Berita", url: "/dashboard/berita", icon: Newspaper },
     { title: "Galeri", url: "/dashboard/galeri", icon: Image },
-    { title: "Laporan", url: "/dashboard/laporan", icon: BarChart3 },
-    { title: "Petugas", url: "/dashboard/petugas", icon: UserCog },
     { title: "Tampilan", url: "/dashboard/tampilan", icon: Palette },
+    { title: "Akun", url: "/dashboard/akun", icon: Users },
   ],
 };
 

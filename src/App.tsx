@@ -23,6 +23,8 @@ import AdminGuruPage from "./pages/dashboard/AdminGuruPage";
 import AdminLaporanPage from "./pages/dashboard/AdminLaporanPage";
 import AdminBeritaPage from "./pages/dashboard/AdminBeritaPage";
 import AdminGaleriPage from "./pages/dashboard/AdminGaleriPage";
+import TampilanPage from "./pages/dashboard/TampilanPage";
+import AkunPage from "./pages/dashboard/AkunPage";
 
 const queryClient = new QueryClient();
 
@@ -52,7 +54,8 @@ const App = () => (
               <Route path="laporan" element={<AdminLaporanPage />} />
               <Route path="guru-jadwal" element={<JadwalPage />} />
               <Route path="petugas" element={<PlaceholderPage />} />
-              <Route path="tampilan" element={<PlaceholderPage />} />
+              <Route path="tampilan" element={<TampilanPage />} />
+              <Route path="akun" element={<AkunPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

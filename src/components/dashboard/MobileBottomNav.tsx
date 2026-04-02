@@ -56,14 +56,14 @@ const mobileMenusByRole: Record<UserRole, MobileNavItem[]> = {
     { title: "Absensi", url: "/dashboard/absensi", icon: ClipboardCheck },
     { title: "Laporan", url: "/dashboard/laporan", icon: BarChart3 },
     {
-      title: "Pengaturan", url: "#more", icon: Settings,
+      title: "Lainnya", url: "#more", icon: MoreHorizontal,
       children: [
         { title: "Berita", url: "/dashboard/berita", icon: Newspaper },
         { title: "Galeri", url: "/dashboard/galeri", icon: Image },
         { title: "Perizinan", url: "/dashboard/perizinan", icon: FileText },
         { title: "Jadwal", url: "/dashboard/jadwal", icon: Calendar },
-        { title: "Petugas", url: "/dashboard/petugas", icon: Settings },
         { title: "Tampilan", url: "/dashboard/tampilan", icon: Settings },
+        { title: "Akun", url: "/dashboard/akun", icon: Users },
       ],
     },
   ],

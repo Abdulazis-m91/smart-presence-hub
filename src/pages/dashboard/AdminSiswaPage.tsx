@@ -214,29 +214,31 @@ export default function AdminSiswaPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setViewData(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-md bg-background rounded-2xl shadow-2xl border border-border/50 p-6" onClick={(e) => e.stopPropagation()}>
+              className="relative w-full max-w-lg bg-background rounded-2xl shadow-2xl border border-border/50 p-6" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-lg font-bold text-foreground">Detail Siswa</h2>
                 <button onClick={() => setViewData(null)} className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground"><X className="h-5 w-5" /></button>
               </div>
-              <div className="flex items-center gap-4 mb-5">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg">{viewData.photo}</div>
-                <div>
-                  <p className="font-bold text-foreground">{viewData.name}</p>
-                  <p className="text-sm text-muted-foreground">NISN: {viewData.nisn}</p>
+              <div className="flex gap-6">
+                <div className="shrink-0 h-[140px] w-[120px] rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-3xl shadow-lg">
+                  {viewData.photo}
                 </div>
-              </div>
-              <div className="space-y-3">
-                {[
-                  ["Jenjang", viewData.level],
-                  ["Kelas", viewData.class],
-                  ["RFID", viewData.rfid],
-                ].map(([label, value]) => (
-                  <div key={label} className="flex items-start gap-3">
-                    <span className="text-sm text-muted-foreground w-20 shrink-0">{label}</span>
-                    <span className="text-sm font-medium text-foreground">{value}</span>
+                <div className="flex-1 space-y-3 py-1">
+                  <div>
+                    <p className="text-lg font-bold text-foreground">{viewData.name}</p>
+                    <p className="text-sm text-muted-foreground">NISN: {viewData.nisn}</p>
                   </div>
-                ))}
+                  {[
+                    ["Jenjang", viewData.level],
+                    ["Kelas", viewData.class],
+                    ["RFID", viewData.rfid],
+                  ].map(([label, value]) => (
+                    <div key={label} className="flex items-start gap-3">
+                      <span className="text-sm text-muted-foreground w-20 shrink-0">{label}</span>
+                      <span className="text-sm font-medium text-foreground">{value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </motion.div>
           </motion.div>

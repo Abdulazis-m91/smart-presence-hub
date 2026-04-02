@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Clock, Users, Edit3, Plus, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Clock, Users, Edit3, Plus, Trash2, X } from "lucide-react";
 import TambahJadwalModal from "@/components/dashboard/TambahJadwalModal";
 import { toast } from "sonner";
 
@@ -78,6 +78,7 @@ export default function AdminJadwalPage() {
   const [tab, setTab] = useState<"smp" | "sma">("smp");
   const [showModal, setShowModal] = useState(false);
   const [editJadwal, setEditJadwal] = useState<{ day: string; teacher: string; subject: string; level: string; class: string; timeStart: string; timeEnd: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ day: string; item: ScheduleItem } | null>(null);
   const schedule = tab === "smp" ? smpSchedule : smaSchedule;
 
   const handleEditItem = (day: string, item: ScheduleItem) => {
@@ -94,8 +95,10 @@ export default function AdminJadwalPage() {
     setShowModal(true);
   };
 
-  const handleDeleteItem = (day: string, item: ScheduleItem) => {
-    toast.success(`Jadwal ${item.subject} (${item.teacher}) hari ${day} berhasil dihapus`);
+  const handleDeleteItem = () => {
+    if (!deleteTarget) return;
+    toast.success(`Jadwal ${deleteTarget.item.subject} (${deleteTarget.item.teacher}) hari ${deleteTarget.day} berhasil dihapus`);
+    setDeleteTarget(null);
   };
 
   return (
@@ -165,7 +168,7 @@ export default function AdminJadwalPage() {
                           <button onClick={() => handleEditItem(day, item)} className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors" title="Edit">
                             <Edit3 className="h-3.5 w-3.5" />
                           </button>
-                          <button onClick={() => handleDeleteItem(day, item)} className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors" title="Hapus">
+                          <button onClick={() => setDeleteTarget({ day, item })} className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors" title="Hapus">
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
@@ -180,6 +183,29 @@ export default function AdminJadwalPage() {
       </div>
 
       <TambahJadwalModal open={showModal} onClose={() => { setShowModal(false); setEditJadwal(null); }} editData={editJadwal} />
+
+      {/* Delete Confirmation */}
+      <AnimatePresence>
+        {deleteTarget && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDeleteTarget(null)} />
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-sm bg-background rounded-2xl shadow-2xl border border-border/50 p-6" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-foreground">Hapus Jadwal</h2>
+                <button onClick={() => setDeleteTarget(null)} className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground"><X className="h-5 w-5" /></button>
+              </div>
+              <p className="text-sm text-muted-foreground mb-5">
+                Apakah Anda yakin ingin menghapus jadwal <span className="font-semibold text-foreground">"{deleteTarget.item.subject}"</span> ({deleteTarget.item.teacher}) hari <span className="font-semibold text-foreground">{deleteTarget.day}</span>?
+              </p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteTarget(null)} className="flex-1 px-4 py-2.5 rounded-xl bg-muted/30 text-sm font-medium text-foreground hover:bg-muted/50 transition-all">Batal</button>
+                <button onClick={handleDeleteItem} className="flex-1 px-4 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-all">Hapus</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

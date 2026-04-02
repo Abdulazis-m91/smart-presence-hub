@@ -229,26 +229,35 @@ export default function AdminGuruPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setViewData(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-md bg-background rounded-2xl shadow-2xl border border-border/50 p-6" onClick={(e) => e.stopPropagation()}>
+              className="relative w-full max-w-lg bg-background rounded-2xl shadow-2xl border border-border/50 p-6" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-lg font-bold text-foreground">Detail Guru</h2>
                 <button onClick={() => setViewData(null)} className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground"><X className="h-5 w-5" /></button>
               </div>
-              <div className="space-y-3">
-                {[
-                  ["NIP", viewData.nip],
-                  ["Nama", viewData.name],
-                  ["Status", viewData.status],
-                  ["Mata Pelajaran", viewData.subject],
-                  ["Jenjang", viewData.levels.length > 0 ? viewData.levels.join(", ") : "-"],
-                  ["Email", viewData.email],
-                  ["WhatsApp", viewData.wa],
-                ].map(([label, value]) => (
-                  <div key={label} className="flex items-start gap-3">
-                    <span className="text-sm text-muted-foreground w-28 shrink-0">{label}</span>
-                    <span className="text-sm font-medium text-foreground">{value}</span>
+              <div className="flex gap-6">
+                <div className="shrink-0 h-[180px] w-[140px] rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-3xl shadow-lg">
+                  {viewData.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                </div>
+                <div className="flex-1 space-y-3 py-1">
+                  <div className="mb-1">
+                    <p className="text-lg font-bold text-foreground">{viewData.name}</p>
+                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border mt-1 ${
+                      viewData.status === "Guru" ? "bg-secondary/10 text-secondary border-secondary/20" : "bg-violet-500/10 text-violet-600 border-violet-500/20"
+                    }`}>{viewData.status}</span>
                   </div>
-                ))}
+                  {[
+                    ["NIP", viewData.nip],
+                    ["Mata Pelajaran", viewData.subject],
+                    ["Jenjang", viewData.levels.length > 0 ? viewData.levels.join(", ") : "-"],
+                    ["Email", viewData.email],
+                    ["WhatsApp", viewData.wa],
+                  ].map(([label, value]) => (
+                    <div key={label} className="flex items-start gap-3">
+                      <span className="text-sm text-muted-foreground w-28 shrink-0">{label}</span>
+                      <span className="text-sm font-medium text-foreground">{value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </motion.div>
           </motion.div>

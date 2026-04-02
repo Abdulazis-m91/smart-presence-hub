@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Filter, Plus, Download, Eye, Edit3, Trash2, Users, ChevronRight } from "lucide-react";
-import TambahGuruModal from "@/components/dashboard/TambahGuruModal";
+import TambahGuruModal, { type GuruData } from "@/components/dashboard/TambahGuruModal";
 
 function AnimatedNumber({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);

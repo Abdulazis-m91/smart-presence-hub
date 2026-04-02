@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Users, Edit3, Plus, Trash2, X } from "lucide-react";
+import { Clock, Users, Edit3, Plus, Trash2 } from "lucide-react";
+import DeleteConfirmModal from "@/components/dashboard/DeleteConfirmModal";
 import TambahJadwalModal from "@/components/dashboard/TambahJadwalModal";
 import { toast } from "sonner";
 
@@ -184,28 +185,13 @@ export default function AdminJadwalPage() {
 
       <TambahJadwalModal open={showModal} onClose={() => { setShowModal(false); setEditJadwal(null); }} editData={editJadwal} />
 
-      {/* Delete Confirmation */}
-      <AnimatePresence>
-        {deleteTarget && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDeleteTarget(null)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-sm bg-background rounded-2xl shadow-2xl border border-border/50 p-6" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-foreground">Hapus Jadwal</h2>
-                <button onClick={() => setDeleteTarget(null)} className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground"><X className="h-5 w-5" /></button>
-              </div>
-              <p className="text-sm text-muted-foreground mb-5">
-                Apakah Anda yakin ingin menghapus jadwal <span className="font-semibold text-foreground">"{deleteTarget.item.subject}"</span> ({deleteTarget.item.teacher}) hari <span className="font-semibold text-foreground">{deleteTarget.day}</span>?
-              </p>
-              <div className="flex gap-3">
-                <button onClick={() => setDeleteTarget(null)} className="flex-1 px-4 py-2.5 rounded-xl bg-muted/30 text-sm font-medium text-foreground hover:bg-muted/50 transition-all">Batal</button>
-                <button onClick={handleDeleteItem} className="flex-1 px-4 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-all">Hapus</button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <DeleteConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteItem}
+        title="Hapus Jadwal"
+        message={deleteTarget ? <>Apakah Anda yakin ingin menghapus jadwal <span className="font-semibold text-foreground">"{deleteTarget.item.subject}"</span> ({deleteTarget.item.teacher}) hari <span className="font-semibold text-foreground">{deleteTarget.day}</span>? Data yang dihapus tidak dapat dikembalikan.</> : null}
+      />
     </div>
   );
 }

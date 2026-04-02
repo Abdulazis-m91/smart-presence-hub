@@ -139,8 +139,13 @@ Deno.serve(async (req) => {
         });
       }
 
+      // Delete from profiles and user_roles first (no FK cascade)
+      await supabaseAdmin.from("user_roles").delete().eq("user_id", user_id);
+      await supabaseAdmin.from("profiles").delete().eq("user_id", user_id);
+
+      // Delete auth user - ignore "User not found" if already deleted
       const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user_id);
-      if (deleteError) {
+      if (deleteError && !deleteError.message.includes("User not found")) {
         return new Response(JSON.stringify({ error: deleteError.message }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },

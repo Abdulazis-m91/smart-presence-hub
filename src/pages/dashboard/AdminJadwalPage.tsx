@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Users, Edit3, Plus, Trash2 } from "lucide-react";
+import { Clock, Users, Edit3, Plus, Trash2, Loader2 } from "lucide-react";
 import DeleteConfirmModal from "@/components/dashboard/DeleteConfirmModal";
 import TambahJadwalModal from "@/components/dashboard/TambahJadwalModal";
-import { toast } from "sonner";
+import { useJadwal, useDeleteJadwal } from "@/hooks/use-data";
 
 const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-
 const dayColors: Record<string, string> = {
   Senin: "from-blue-500 to-cyan-500",
   Selasa: "from-emerald-500 to-teal-500",
@@ -16,91 +15,43 @@ const dayColors: Record<string, string> = {
   Sabtu: "from-indigo-500 to-blue-500",
 };
 
-interface ScheduleItem {
-  teacher: string;
-  subject: string;
-  class: string;
-  time: string;
-}
-
-const smpSchedule: Record<string, ScheduleItem[]> = {
-  Senin: [
-    { teacher: "Ahmad Fauzi", subject: "Matematika", class: "VII-A", time: "07:00 - 08:30" },
-    { teacher: "Siti Rahmawati", subject: "B. Indonesia", class: "VIII-B", time: "07:00 - 08:30" },
-    { teacher: "Dewi Lestari", subject: "IPA", class: "IX-A", time: "08:30 - 10:00" },
-    { teacher: "Rina Marlina", subject: "B. Inggris", class: "VII-B", time: "10:15 - 11:45" },
-  ],
-  Selasa: [
-    { teacher: "Agus Wijaya", subject: "IPS", class: "VIII-A", time: "07:00 - 08:30" },
-    { teacher: "Ahmad Fauzi", subject: "Matematika", class: "IX-B", time: "08:30 - 10:00" },
-  ],
-  Rabu: [
-    { teacher: "Siti Rahmawati", subject: "B. Indonesia", class: "VII-A", time: "07:00 - 08:30" },
-    { teacher: "Rina Marlina", subject: "B. Inggris", class: "IX-A", time: "08:30 - 10:00" },
-  ],
-  Kamis: [
-    { teacher: "Dewi Lestari", subject: "IPA", class: "VIII-B", time: "07:00 - 08:30" },
-    { teacher: "Agus Wijaya", subject: "IPS", class: "IX-B", time: "08:30 - 10:00" },
-  ],
-  Jumat: [
-    { teacher: "Budi Santoso", subject: "IPA", class: "IX-A", time: "07:00 - 08:30" },
-  ],
-  Sabtu: [
-    { teacher: "Rina Marlina", subject: "B. Inggris", class: "VIII-B", time: "07:00 - 08:30" },
-  ],
-};
-
-const smaSchedule: Record<string, ScheduleItem[]> = {
-  Senin: [
-    { teacher: "Hasan Basri", subject: "Kimia", class: "XII-A", time: "07:00 - 08:30" },
-    { teacher: "Lina Kartika", subject: "Geografi", class: "X-A", time: "07:00 - 08:30" },
-    { teacher: "Joko Prasetyo", subject: "Penjaskes", class: "XI-A", time: "08:30 - 10:00" },
-  ],
-  Selasa: [
-    { teacher: "Hasan Basri", subject: "Kimia", class: "XI-B", time: "07:00 - 08:30" },
-    { teacher: "Maya Anggraini", subject: "Seni Budaya", class: "XI-A", time: "10:15 - 11:45" },
-  ],
-  Rabu: [
-    { teacher: "Joko Prasetyo", subject: "Penjaskes", class: "XII-A", time: "07:00 - 08:30" },
-    { teacher: "Hasan Basri", subject: "Kimia", class: "X-A", time: "08:30 - 10:00" },
-  ],
-  Kamis: [
-    { teacher: "Lina Kartika", subject: "Geografi", class: "XI-A", time: "07:00 - 08:30" },
-  ],
-  Jumat: [
-    { teacher: "Hasan Basri", subject: "Kimia", class: "XI-A", time: "07:00 - 08:30" },
-  ],
-  Sabtu: [
-    { teacher: "Joko Prasetyo", subject: "Penjaskes", class: "XII-B", time: "07:00 - 08:30" },
-  ],
-};
-
 export default function AdminJadwalPage() {
+  const { data: jadwalData = [], isLoading } = useJadwal();
+  const deleteJadwal = useDeleteJadwal();
+
   const [tab, setTab] = useState<"smp" | "sma">("smp");
   const [showModal, setShowModal] = useState(false);
-  const [editJadwal, setEditJadwal] = useState<{ day: string; teacher: string; subject: string; level: string; class: string; timeStart: string; timeEnd: string } | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<{ day: string; item: ScheduleItem } | null>(null);
-  const schedule = tab === "smp" ? smpSchedule : smaSchedule;
+  const [editJadwal, setEditJadwal] = useState<any>(null);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
 
-  const handleEditItem = (day: string, item: ScheduleItem) => {
-    const [timeStart, timeEnd] = item.time.split(" - ");
+  const filteredByLevel = jadwalData.filter(j => j.level === tab.toUpperCase());
+
+  const scheduleByDay: Record<string, typeof jadwalData> = {};
+  days.forEach(d => { scheduleByDay[d] = filteredByLevel.filter(j => j.day === d); });
+
+  const handleEditItem = (item: any) => {
     setEditJadwal({
-      day,
-      teacher: item.teacher,
+      id: item.id,
+      day: item.day,
+      teacher: item.teacher_name,
       subject: item.subject,
-      level: tab.toUpperCase(),
+      level: item.level,
       class: item.class,
-      timeStart,
-      timeEnd,
+      timeStart: item.time_start,
+      timeEnd: item.time_end,
     });
     setShowModal(true);
   };
 
   const handleDeleteItem = () => {
     if (!deleteTarget) return;
-    toast.success(`Jadwal ${deleteTarget.item.subject} (${deleteTarget.item.teacher}) hari ${deleteTarget.day} berhasil dihapus`);
+    deleteJadwal.mutate(deleteTarget.id);
     setDeleteTarget(null);
   };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -110,20 +61,14 @@ export default function AdminJadwalPage() {
           <p className="text-muted-foreground mt-1">Kelola jadwal mengajar guru per hari</p>
         </div>
         <button onClick={() => { setEditJadwal(null); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shrink-0 shadow-lg shadow-primary/20">
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Tambah Jadwal</span>
+          <Plus className="h-4 w-4" /><span className="hidden sm:inline">Tambah Jadwal</span>
         </button>
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex rounded-xl glass overflow-hidden w-fit">
         {(["smp", "sma"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-6 py-2.5 text-sm font-semibold transition-all ${
-              tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-            }`}
-          >
+          <button key={t} onClick={() => setTab(t)}
+            className={`px-6 py-2.5 text-sm font-semibold transition-all ${tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}>
             {t.toUpperCase()}
           </button>
         ))}
@@ -131,47 +76,35 @@ export default function AdminJadwalPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {days.map((day, dayIdx) => {
-          const items = schedule[day] || [];
+          const items = scheduleByDay[day] || [];
           return (
-            <motion.div
-              key={`${tab}-${day}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + dayIdx * 0.06 }}
-              className="glass rounded-2xl overflow-hidden"
-            >
+            <motion.div key={`${tab}-${day}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + dayIdx * 0.06 }} className="glass rounded-2xl overflow-hidden">
               <div className={`bg-gradient-to-r ${dayColors[day]} px-5 py-3.5 flex items-center justify-between`}>
                 <div>
                   <h3 className="font-bold text-white text-base uppercase tracking-wide">{day}</h3>
-                  <p className="text-white/80 text-xs mt-0.5 flex items-center gap-1">
-                    <Users className="h-3 w-3" />{items.length} guru mengajar
-                  </p>
+                  <p className="text-white/80 text-xs mt-0.5 flex items-center gap-1"><Users className="h-3 w-3" />{items.length} jadwal</p>
                 </div>
               </div>
               <div className="divide-y divide-border/30">
                 {items.length === 0 ? (
                   <div className="p-5 text-center text-muted-foreground text-sm">Tidak ada jadwal</div>
                 ) : (
-                  items.map((item, i) => (
-                    <div key={i} className="group flex items-center justify-between px-5 py-3.5 hover:bg-muted/10 transition-colors">
+                  items.map((item) => (
+                    <div key={item.id} className="group flex items-center justify-between px-5 py-3.5 hover:bg-muted/10 transition-colors">
                       <div className="min-w-0">
-                        <p className="font-medium text-foreground text-sm truncate">{item.teacher}</p>
+                        <p className="font-medium text-foreground text-sm truncate">{item.teacher_name}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">{item.subject}</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-3">
                         <div className="text-right">
                           <p className="text-sm font-medium text-foreground">{item.class}</p>
                           <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1 justify-end">
-                            <Clock className="h-3 w-3" />{item.time}
+                            <Clock className="h-3 w-3" />{item.time_start} - {item.time_end}
                           </p>
                         </div>
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => handleEditItem(day, item)} className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors" title="Edit">
-                            <Edit3 className="h-3.5 w-3.5" />
-                          </button>
-                          <button onClick={() => setDeleteTarget({ day, item })} className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors" title="Hapus">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
+                          <button onClick={() => handleEditItem(item)} className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors" title="Edit"><Edit3 className="h-3.5 w-3.5" /></button>
+                          <button onClick={() => setDeleteTarget(item)} className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors" title="Hapus"><Trash2 className="h-3.5 w-3.5" /></button>
                         </div>
                       </div>
                     </div>
@@ -190,7 +123,7 @@ export default function AdminJadwalPage() {
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDeleteItem}
         title="Hapus Jadwal"
-        message={deleteTarget ? <>Apakah Anda yakin ingin menghapus jadwal <span className="font-semibold text-foreground">"{deleteTarget.item.subject}"</span> ({deleteTarget.item.teacher}) hari <span className="font-semibold text-foreground">{deleteTarget.day}</span>? Data yang dihapus tidak dapat dikembalikan.</> : null}
+        message={deleteTarget ? <>Apakah Anda yakin ingin menghapus jadwal <span className="font-semibold text-foreground">"{deleteTarget.subject}"</span> ({deleteTarget.teacher_name}) hari <span className="font-semibold text-foreground">{deleteTarget.day}</span>?</> : null}
       />
     </div>
   );

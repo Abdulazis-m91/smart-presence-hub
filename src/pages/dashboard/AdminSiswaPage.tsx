@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Plus, Download, Eye, Edit3, Trash2, Users, ChevronRight, X } from "lucide-react";
+import { Search, Filter, Plus, Download, Eye, Edit3, Trash2, Users, ChevronRight, X, Loader2 } from "lucide-react";
 import DeleteConfirmModal from "@/components/dashboard/DeleteConfirmModal";
 import TambahSiswaModal, { type SiswaData } from "@/components/dashboard/TambahSiswaModal";
-import { toast } from "sonner";
+import { useSiswa, useDeleteSiswa } from "@/hooks/use-data";
 
 function AnimatedNumber({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);
@@ -22,35 +22,22 @@ function AnimatedNumber({ value }: { value: number }) {
   return <>{display}</>;
 }
 
-const studentsData = Array.from({ length: 50 }, (_, i) => ({
-  no: i + 1,
-  nisn: `00${3000 + i}`,
-  photo: ["AS", "BR", "CD", "DW", "EF", "FG", "GH", "HI", "IJ", "JK"][i % 10],
-  name: [
-    "Aisyah Putri", "Bima Rizky", "Cantika Dewi", "Dani Wahyu", "Eka Fitria",
-    "Farhan Ahmad", "Gita Nuraini", "Hendra Saputra", "Indah Permata", "Joko Susanto",
-    "Kartika Sari", "Lukman Hakim", "Mega Wati", "Nanda Pratama", "Olivia Rahma",
-    "Putra Satria", "Qori Amalia", "Raka Mahendra", "Sinta Dewi", "Taufik Hidayat",
-  ][i % 20],
-  level: i % 2 === 0 ? "SMP" : "SMA",
-  class: ["VII-A", "VIII-B", "IX-A", "X-A", "XI-B", "XII-A"][i % 6],
-  rfid: `RFID-${(1000 + i).toString().padStart(6, "0")}`,
-}));
-
 const smpClasses = ["VII-A", "VII-B", "VIII-A", "VIII-B", "IX-A", "IX-B"];
 const smaClasses = ["X-A", "X-B", "XI-A", "XI-B", "XII-A", "XII-B"];
-
 const PAGE_SIZE = 25;
 
 export default function AdminSiswaPage() {
+  const { data: studentsData = [], isLoading } = useSiswa();
+  const deleteSiswa = useDeleteSiswa();
+
   const [search, setSearch] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
   const [classFilter, setClassFilter] = useState("");
   const [page, setPage] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [editData, setEditData] = useState<SiswaData | null>(null);
-  const [viewData, setViewData] = useState<typeof studentsData[0] | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<typeof studentsData[0] | null>(null);
+  const [editData, setEditData] = useState<(SiswaData & { id: string }) | null>(null);
+  const [viewData, setViewData] = useState<any>(null);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
 
   const availableClasses = levelFilter === "SMP" ? smpClasses : levelFilter === "SMA" ? smaClasses : [...smpClasses, ...smaClasses];
 
@@ -72,10 +59,18 @@ export default function AdminSiswaPage() {
     { label: "SMA", value: studentsData.filter(s => s.level === "SMA").length, gradient: "from-violet-500 to-purple-500" },
   ];
 
-  const handleDelete = (row: typeof studentsData[0]) => {
-    toast.success(`Data siswa "${row.name}" berhasil dihapus`);
+  const handleDelete = (row: any) => {
+    deleteSiswa.mutate(row.id);
     setDeleteTarget(null);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -137,7 +132,7 @@ export default function AdminSiswaPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-muted/30">
-                {["No", "NISN", "Foto", "Nama Lengkap", "Jenjang", "Kelas", "RFID", "Aksi"].map((h) => (
+                {["No", "NISN", "Nama Lengkap", "Jenjang", "Kelas", "RFID", "Aksi"].map((h) => (
                   <th key={h} className="text-left py-3.5 px-5 text-muted-foreground font-semibold text-xs uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -145,15 +140,12 @@ export default function AdminSiswaPage() {
             <tbody>
               <AnimatePresence mode="popLayout">
                 {paged.map((row, i) => (
-                  <motion.tr key={row.nisn} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
+                  <motion.tr key={row.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
                     transition={{ delay: 0.03 * i }} className="border-t border-border/30 hover:bg-muted/20 transition-colors">
                     <td className="py-3.5 px-5">
                       <span className="h-7 w-7 rounded-lg bg-muted/50 flex items-center justify-center text-xs font-bold text-muted-foreground">{page * PAGE_SIZE + i + 1}</span>
                     </td>
                     <td className="py-3.5 px-5 font-mono text-xs text-muted-foreground">{row.nisn}</td>
-                    <td className="py-3.5 px-5">
-                      <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xs">{row.photo}</div>
-                    </td>
                     <td className="py-3.5 px-5 font-medium text-foreground whitespace-nowrap">{row.name}</td>
                     <td className="py-3.5 px-5">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
@@ -167,7 +159,7 @@ export default function AdminSiswaPage() {
                         <button onClick={() => setViewData(row)} className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors" title="Lihat">
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button onClick={() => { setEditData({ nisn: row.nisn, name: row.name, level: row.level as "SMP"|"SMA", class: row.class, rfid: row.rfid }); setShowModal(true); }} className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors" title="Edit">
+                        <button onClick={() => { setEditData({ id: row.id, nisn: row.nisn, name: row.name, level: row.level as "SMP"|"SMA", class: row.class, rfid: row.rfid }); setShowModal(true); }} className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors" title="Edit">
                           <Edit3 className="h-4 w-4" />
                         </button>
                         <button onClick={() => setDeleteTarget(row)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors" title="Hapus">
@@ -180,9 +172,10 @@ export default function AdminSiswaPage() {
               </AnimatePresence>
               {paged.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-muted-foreground">
+                  <td colSpan={7} className="py-12 text-center text-muted-foreground">
                     <Users className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                    <p className="font-medium">Tidak ada data yang cocok</p>
+                    <p className="font-medium">Tidak ada data siswa</p>
+                    <p className="text-xs mt-1">Klik "Tambah Siswa" untuk menambah data</p>
                   </td>
                 </tr>
               )}
@@ -209,7 +202,6 @@ export default function AdminSiswaPage() {
 
       <TambahSiswaModal open={showModal} onClose={() => { setShowModal(false); setEditData(null); }} editData={editData} />
 
-      {/* View Modal */}
       <AnimatePresence>
         {viewData && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -220,26 +212,19 @@ export default function AdminSiswaPage() {
                 <h2 className="text-lg font-bold text-foreground">Detail Siswa</h2>
                 <button onClick={() => setViewData(null)} className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground"><X className="h-5 w-5" /></button>
               </div>
-              <div className="flex gap-6">
-                <div className="shrink-0 h-[140px] w-[120px] rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-3xl shadow-lg">
-                  {viewData.photo}
-                </div>
-                <div className="flex-1 space-y-3 py-1">
-                  <div>
-                    <p className="text-lg font-bold text-foreground">{viewData.name}</p>
-                    <p className="text-sm text-muted-foreground">NISN: {viewData.nisn}</p>
+              <div className="space-y-3">
+                <p className="text-lg font-bold text-foreground">{viewData.name}</p>
+                {[
+                  ["NISN", viewData.nisn],
+                  ["Jenjang", viewData.level],
+                  ["Kelas", viewData.class],
+                  ["RFID", viewData.rfid],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex items-start gap-3">
+                    <span className="text-sm text-muted-foreground w-20 shrink-0">{label}</span>
+                    <span className="text-sm font-medium text-foreground">{value}</span>
                   </div>
-                  {[
-                    ["Jenjang", viewData.level],
-                    ["Kelas", viewData.class],
-                    ["RFID", viewData.rfid],
-                  ].map(([label, value]) => (
-                    <div key={label} className="flex items-start gap-3">
-                      <span className="text-sm text-muted-foreground w-20 shrink-0">{label}</span>
-                      <span className="text-sm font-medium text-foreground">{value}</span>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
             </motion.div>
           </motion.div>
@@ -251,7 +236,7 @@ export default function AdminSiswaPage() {
         onClose={() => setDeleteTarget(null)}
         onConfirm={() => deleteTarget && handleDelete(deleteTarget)}
         title="Hapus Data Siswa"
-        message={<>Apakah Anda yakin ingin menghapus data <span className="font-semibold text-foreground">"{deleteTarget?.name}"</span>? Data yang dihapus tidak dapat dikembalikan.</>}
+        message={<>Apakah Anda yakin ingin menghapus data <span className="font-semibold text-foreground">"{deleteTarget?.name}"</span>?</>}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Users, Edit3, Plus, Trash2, X } from "lucide-react";
+import { Clock, Users, Edit3, Plus, Trash2 } from "lucide-react";
+import DeleteConfirmModal from "@/components/dashboard/DeleteConfirmModal";
 import TambahJadwalModal from "@/components/dashboard/TambahJadwalModal";
 import { toast } from "sonner";
 

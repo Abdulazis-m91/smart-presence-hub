@@ -160,7 +160,7 @@ export default function AdminSiswaPage() {
                     <td className="py-3.5 px-5">
                       <div className="flex items-center gap-1">
                         <button className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"><Eye className="h-4 w-4" /></button>
-                        <button className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors"><Edit3 className="h-4 w-4" /></button>
+                        <button onClick={() => { setEditData({ nisn: row.nisn, name: row.name, level: row.level as "SMP"|"SMA", class: row.class, rfid: row.rfid }); setShowModal(true); }} className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors"><Edit3 className="h-4 w-4" /></button>
                         <button className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
                       </div>
                     </td>

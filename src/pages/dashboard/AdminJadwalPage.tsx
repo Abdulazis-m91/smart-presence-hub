@@ -78,6 +78,7 @@ export default function AdminJadwalPage() {
   const [tab, setTab] = useState<"smp" | "sma">("smp");
   const [showModal, setShowModal] = useState(false);
   const [editJadwal, setEditJadwal] = useState<{ day: string; teacher: string; subject: string; level: string; class: string; timeStart: string; timeEnd: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ day: string; item: ScheduleItem } | null>(null);
   const schedule = tab === "smp" ? smpSchedule : smaSchedule;
 
   const handleEditItem = (day: string, item: ScheduleItem) => {
@@ -94,8 +95,10 @@ export default function AdminJadwalPage() {
     setShowModal(true);
   };
 
-  const handleDeleteItem = (day: string, item: ScheduleItem) => {
-    toast.success(`Jadwal ${item.subject} (${item.teacher}) hari ${day} berhasil dihapus`);
+  const handleDeleteItem = () => {
+    if (!deleteTarget) return;
+    toast.success(`Jadwal ${deleteTarget.item.subject} (${deleteTarget.item.teacher}) hari ${deleteTarget.day} berhasil dihapus`);
+    setDeleteTarget(null);
   };
 
   return (

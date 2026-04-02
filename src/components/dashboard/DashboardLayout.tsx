@@ -83,9 +83,13 @@ export default function DashboardLayout() {
                 <span className="absolute top-1.5 right-1.5 md:top-2 md:right-2 h-2 w-2 bg-destructive rounded-full animate-pulse" />
               </button>
               <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 md:gap-3 pl-2 md:pl-3 border-l border-border/50 hover:opacity-80 transition-opacity cursor-pointer">
-                <div className="h-8 w-8 md:h-9 md:w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
-                  {user.name.charAt(0)}
-                </div>
+                {user.photo_url ? (
+                  <img src={user.photo_url} alt={user.name} className="h-8 w-8 md:h-9 md:w-9 rounded-full object-cover" />
+                ) : (
+                  <div className="h-8 w-8 md:h-9 md:w-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
+                    {user.name.charAt(0)}
+                  </div>
+                )}
                 <div className="hidden lg:block text-left">
                   <p className="text-sm font-semibold text-foreground leading-tight">{user.name}</p>
                   <p className="text-xs text-muted-foreground capitalize">{user.role}</p>

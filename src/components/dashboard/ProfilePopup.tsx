@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, Pencil, Mail, Phone, BadgeCheck, BookOpen, X } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";

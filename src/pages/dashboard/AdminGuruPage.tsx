@@ -265,23 +265,13 @@ export default function AdminGuruPage() {
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation */}
-      <AnimatePresence>
-        {deleteTarget && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDeleteTarget(null)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-sm bg-background rounded-2xl shadow-2xl border border-border/50 p-6" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-lg font-bold text-foreground mb-2">Hapus Data</h2>
-              <p className="text-sm text-muted-foreground mb-5">Apakah Anda yakin ingin menghapus data <span className="font-semibold text-foreground">"{deleteTarget.name}"</span>?</p>
-              <div className="flex gap-3">
-                <button onClick={() => setDeleteTarget(null)} className="flex-1 px-4 py-2.5 rounded-xl bg-muted/30 text-sm font-medium text-foreground hover:bg-muted/50 transition-all">Batal</button>
-                <button onClick={() => handleDelete(deleteTarget)} className="flex-1 px-4 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-all">Hapus</button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <DeleteConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => deleteTarget && handleDelete(deleteTarget)}
+        title="Hapus Data Guru"
+        message={<>Apakah Anda yakin ingin menghapus data <span className="font-semibold text-foreground">"{deleteTarget?.name}"</span>? Data yang dihapus tidak dapat dikembalikan.</>}
+      />
     </div>
   );
 }

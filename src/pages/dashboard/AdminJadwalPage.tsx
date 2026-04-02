@@ -168,7 +168,7 @@ export default function AdminJadwalPage() {
                           <button onClick={() => handleEditItem(day, item)} className="p-1.5 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors" title="Edit">
                             <Edit3 className="h-3.5 w-3.5" />
                           </button>
-                          <button onClick={() => handleDeleteItem(day, item)} className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors" title="Hapus">
+                          <button onClick={() => setDeleteTarget({ day, item })} className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors" title="Hapus">
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>

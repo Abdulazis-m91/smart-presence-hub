@@ -72,9 +72,9 @@ export default function TambahSiswaModal({ open, onClose, editData }: Props) {
 
   const onSubmit = (data: SiswaForm) => {
     if (editData?.id) {
-      updateSiswa.mutate({ id: editData.id, ...data });
+      updateSiswa.mutate({ id: editData.id, nisn: data.nisn, name: data.name, level: data.level, class: data.class, rfid: data.rfid });
     } else {
-      createSiswa.mutate(data);
+      createSiswa.mutate({ nisn: data.nisn, name: data.name, level: data.level, class: data.class, rfid: data.rfid });
     }
     reset();
     setPhotoPreview(null);

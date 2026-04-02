@@ -4,31 +4,35 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProfilePopupProps {
   open: boolean;
   onClose: () => void;
 }
 
-const guruProfiles: Record<string, {
-  nip: string;
-  email: string;
-  whatsapp: string;
-  subject: string;
-  photo?: string;
-}> = {
-  "1": { nip: "198505152010011003", email: "guru@school.id", whatsapp: "08123456789", subject: "Matematika" },
-  "2": { nip: "199001012015022001", email: "petugas@school.id", whatsapp: "08198765432", subject: "-" },
-  "3": { nip: "197803202005011002", email: "admin@school.id", whatsapp: "08112233445", subject: "-" },
-};
-
 export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  // Fetch guru record by email to get NIP & subject
+  const { data: guruData } = useQuery({
+    queryKey: ["guru-profile", user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const { data } = await supabase.from("guru").select("nip, subject, whatsapp, photo_url").eq("email", user.email).maybeSingle();
+      return data;
+    },
+    enabled: !!user?.email,
+  });
+
   if (!user) return null;
 
-  const profile = guruProfiles[user.id] || { nip: "-", email: user.email, whatsapp: "-", subject: "-" };
+  const nip = guruData?.nip || "-";
+  const subject = guruData?.subject || "-";
+  const whatsapp = guruData?.whatsapp || user.whatsapp || "-";
+  const photoUrl = user.photo_url || guruData?.photo_url || "";
 
   const handleLogout = () => {
     logout();
@@ -47,7 +51,6 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
     <AnimatePresence>
       {open && (
         <>
-          {/* Dimmed backdrop + centered container */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -72,7 +75,7 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
                   <X className="h-4 w-4" />
                 </button>
                 <Avatar className="h-20 w-20 rounded-2xl shadow-lg mx-auto">
-                  <AvatarImage src={user.photo_url} alt={user.name} className="object-cover rounded-2xl" />
+                  <AvatarImage src={photoUrl} alt={user.name} className="object-cover rounded-2xl" />
                   <AvatarFallback className="rounded-2xl gradient-primary text-primary-foreground text-2xl font-bold">
                     {user.name.charAt(0)}
                   </AvatarFallback>
@@ -80,7 +83,7 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
                 <h3 className="text-lg font-bold text-foreground mt-4">{user.name}</h3>
                 <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 mt-1">
                   <BookOpen className="h-3.5 w-3.5" />
-                  {profile.subject}
+                  {subject}
                 </p>
               </div>
 
@@ -94,7 +97,7 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
                   </div>
                   <div className="min-w-0">
                     <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">NIP</p>
-                    <p className="text-sm text-foreground font-mono truncate">{profile.nip}</p>
+                    <p className="text-sm text-foreground font-mono truncate">{nip}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -103,7 +106,7 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
                   </div>
                   <div className="min-w-0">
                     <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">Email</p>
-                    <p className="text-sm text-foreground truncate">{profile.email}</p>
+                    <p className="text-sm text-foreground truncate">{user.email}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -112,7 +115,7 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
                   </div>
                   <div className="min-w-0">
                     <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">WhatsApp</p>
-                    <p className="text-sm text-foreground">{profile.whatsapp}</p>
+                    <p className="text-sm text-foreground">{whatsapp}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -128,7 +131,7 @@ export default function ProfilePopup({ open, onClose }: ProfilePopupProps) {
 
               <Separator />
 
-              {/* Actions - side by side */}
+              {/* Actions */}
               <div className="p-4 flex gap-3">
                 <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-semibold shadow-md">
                   <Pencil className="h-4 w-4" />

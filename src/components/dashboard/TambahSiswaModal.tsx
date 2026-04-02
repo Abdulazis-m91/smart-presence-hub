@@ -49,6 +49,18 @@ export default function TambahSiswaModal({ open, onClose, editData }: Props) {
     } : { nisn: "", name: "", level: undefined, class: "", rfid: "" },
   });
 
+  useEffect(() => {
+    if (open) {
+      if (editData) {
+        reset({ nisn: editData.nisn, name: editData.name, level: editData.level, class: editData.class, rfid: editData.rfid });
+        setPhotoPreview(editData.photo || null);
+      } else {
+        reset({ nisn: "", name: "", level: undefined, class: "", rfid: "" });
+        setPhotoPreview(null);
+      }
+    }
+  }, [open, editData, reset]);
+
   const level = watch("level");
   const classes = level === "SMP" ? smpClasses : level === "SMA" ? smaClasses : [];
 

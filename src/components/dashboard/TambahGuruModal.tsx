@@ -59,6 +59,18 @@ export default function TambahGuruModal({ open, onClose, editData }: Props) {
     } : { nip: "", name: "", status: undefined, rfid: "", subject: "", level: "", email: "", wa: "", password: "" },
   });
 
+  useEffect(() => {
+    if (open) {
+      if (editData) {
+        reset({ nip: editData.nip, name: editData.name, status: editData.status, rfid: editData.rfid || "", subject: editData.subject || "", level: editData.level || "", email: editData.email, wa: editData.wa, password: "" });
+        setPhotoPreview(editData.photo || null);
+      } else {
+        reset({ nip: "", name: "", status: undefined, rfid: "", subject: "", level: "", email: "", wa: "", password: "" });
+        setPhotoPreview(null);
+      }
+    }
+  }, [open, editData, reset]);
+
   const status = watch("status");
   const subject = watch("subject");
 

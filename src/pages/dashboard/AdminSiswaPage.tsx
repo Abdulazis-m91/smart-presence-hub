@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Plus, Download, Eye, Edit3, Trash2, Users, ChevronRight } from "lucide-react";
+import { Search, Filter, Plus, Download, Eye, Edit3, Trash2, Users, ChevronRight, X } from "lucide-react";
 import TambahSiswaModal, { type SiswaData } from "@/components/dashboard/TambahSiswaModal";
+import { toast } from "sonner";
 
 function AnimatedNumber({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);
@@ -47,6 +48,8 @@ export default function AdminSiswaPage() {
   const [page, setPage] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState<SiswaData | null>(null);
+  const [viewData, setViewData] = useState<typeof studentsData[0] | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<typeof studentsData[0] | null>(null);
 
   const availableClasses = levelFilter === "SMP" ? smpClasses : levelFilter === "SMA" ? smaClasses : [...smpClasses, ...smaClasses];
 
@@ -68,6 +71,11 @@ export default function AdminSiswaPage() {
     { label: "SMA", value: studentsData.filter(s => s.level === "SMA").length, gradient: "from-violet-500 to-purple-500" },
   ];
 
+  const handleDelete = (row: typeof studentsData[0]) => {
+    toast.success(`Data siswa "${row.name}" berhasil dihapus`);
+    setDeleteTarget(null);
+  };
+
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-start justify-between gap-4 flex-wrap">
@@ -80,14 +88,13 @@ export default function AdminSiswaPage() {
             <Download className="h-4 w-4" />
             <span className="hidden sm:inline">Export PDF</span>
           </button>
-          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+          <button onClick={() => { setEditData(null); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Tambah Siswa</span>
           </button>
         </div>
       </motion.div>
 
-      {/* Summary */}
       <div className="grid grid-cols-3 gap-4">
         {summaryCards.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
@@ -99,9 +106,7 @@ export default function AdminSiswaPage() {
         ))}
       </div>
 
-      {/* Container: Filter + Table */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass rounded-2xl overflow-hidden">
-        {/* Filter */}
         <div className="p-5 border-b border-border/30">
           <div className="flex flex-wrap gap-3 items-center">
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 flex-1 min-w-[200px] max-w-sm focus-within:ring-2 focus-within:ring-primary/20 transition-all">
@@ -127,7 +132,6 @@ export default function AdminSiswaPage() {
           </div>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -159,9 +163,15 @@ export default function AdminSiswaPage() {
                     <td className="py-3.5 px-5 font-mono text-xs text-muted-foreground">{row.rfid}</td>
                     <td className="py-3.5 px-5">
                       <div className="flex items-center gap-1">
-                        <button className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"><Eye className="h-4 w-4" /></button>
-                        <button onClick={() => { setEditData({ nisn: row.nisn, name: row.name, level: row.level as "SMP"|"SMA", class: row.class, rfid: row.rfid }); setShowModal(true); }} className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors"><Edit3 className="h-4 w-4" /></button>
-                        <button className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
+                        <button onClick={() => setViewData(row)} className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors" title="Lihat">
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => { setEditData({ nisn: row.nisn, name: row.name, level: row.level as "SMP"|"SMA", class: row.class, rfid: row.rfid }); setShowModal(true); }} className="p-2 rounded-lg hover:bg-amber-500/10 text-amber-600 transition-colors" title="Edit">
+                          <Edit3 className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => setDeleteTarget(row)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors" title="Hapus">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
                     </td>
                   </motion.tr>
@@ -179,17 +189,12 @@ export default function AdminSiswaPage() {
           </table>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="p-5 border-t border-border/30 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Halaman {page + 1} dari {totalPages}
-            </p>
+            <p className="text-sm text-muted-foreground">Halaman {page + 1} dari {totalPages}</p>
             <div className="flex items-center gap-2">
               {page > 0 && (
-                <button onClick={() => setPage(page - 1)} className="px-4 py-2 rounded-xl bg-muted/30 text-sm font-medium text-foreground hover:bg-muted/50 transition-all">
-                  Sebelumnya
-                </button>
+                <button onClick={() => setPage(page - 1)} className="px-4 py-2 rounded-xl bg-muted/30 text-sm font-medium text-foreground hover:bg-muted/50 transition-all">Sebelumnya</button>
               )}
               {page < totalPages - 1 && (
                 <button onClick={() => setPage(page + 1)} className="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all">
@@ -202,6 +207,59 @@ export default function AdminSiswaPage() {
       </motion.div>
 
       <TambahSiswaModal open={showModal} onClose={() => { setShowModal(false); setEditData(null); }} editData={editData} />
+
+      {/* View Modal */}
+      <AnimatePresence>
+        {viewData && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setViewData(null)} />
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-md bg-background rounded-2xl shadow-2xl border border-border/50 p-6" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-lg font-bold text-foreground">Detail Siswa</h2>
+                <button onClick={() => setViewData(null)} className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground"><X className="h-5 w-5" /></button>
+              </div>
+              <div className="flex items-center gap-4 mb-5">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg">{viewData.photo}</div>
+                <div>
+                  <p className="font-bold text-foreground">{viewData.name}</p>
+                  <p className="text-sm text-muted-foreground">NISN: {viewData.nisn}</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {[
+                  ["Jenjang", viewData.level],
+                  ["Kelas", viewData.class],
+                  ["RFID", viewData.rfid],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex items-start gap-3">
+                    <span className="text-sm text-muted-foreground w-20 shrink-0">{label}</span>
+                    <span className="text-sm font-medium text-foreground">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation */}
+      <AnimatePresence>
+        {deleteTarget && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDeleteTarget(null)} />
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-sm bg-background rounded-2xl shadow-2xl border border-border/50 p-6" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-lg font-bold text-foreground mb-2">Hapus Data Siswa</h2>
+              <p className="text-sm text-muted-foreground mb-5">Apakah Anda yakin ingin menghapus data <span className="font-semibold text-foreground">"{deleteTarget.name}"</span>?</p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteTarget(null)} className="flex-1 px-4 py-2.5 rounded-xl bg-muted/30 text-sm font-medium text-foreground hover:bg-muted/50 transition-all">Batal</button>
+                <button onClick={() => handleDelete(deleteTarget)} className="flex-1 px-4 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-all">Hapus</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

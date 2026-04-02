@@ -2,9 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload, User } from "lucide-react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const subjects = ["Matematika", "B. Indonesia", "Fisika", "Biologi", "Kimia", "B. Inggris", "Sejarah", "Geografi", "Penjaskes", "Seni Budaya"];
 
@@ -14,7 +15,7 @@ const guruSchema = z.object({
   status: z.enum(["Guru", "Staff"], { required_error: "Status wajib dipilih" }),
   rfid: z.string().trim().min(1, "RFID wajib diisi").max(30),
   subject: z.string().optional(),
-  level: z.string().optional(),
+  levels: z.array(z.string()).optional(),
   email: z.string().trim().min(1, "Email wajib diisi").email("Format email tidak valid").max(255),
   wa: z.string().trim().min(1, "WhatsApp wajib diisi").regex(/^[\d+]+$/, "Nomor tidak valid").max(20),
   password: z.string().min(6, "Password minimal 6 karakter").max(100),
@@ -28,6 +29,7 @@ export interface GuruData {
   status: "Guru" | "Staff";
   rfid?: string;
   subject?: string;
+  levels?: string[];
   level?: string;
   email: string;
   wa: string;
@@ -40,32 +42,37 @@ interface Props {
   editData?: GuruData | null;
 }
 
+function normalizeLevels(data?: GuruData | null): string[] {
+  if (!data) return [];
+  if (data.levels && data.levels.length > 0) return data.levels;
+  if (data.level && data.level !== "-") return [data.level];
+  return [];
+}
+
 export default function TambahGuruModal({ open, onClose, editData }: Props) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(editData?.photo || null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const { register, handleSubmit, watch, reset, formState: { errors, isSubmitting } } = useForm<GuruForm>({
+  const { register, handleSubmit, watch, reset, control, formState: { errors, isSubmitting } } = useForm<GuruForm>({
     resolver: zodResolver(guruSchema),
     defaultValues: editData ? {
-      nip: editData.nip,
-      name: editData.name,
-      status: editData.status,
-      rfid: editData.rfid || "",
-      subject: editData.subject || "",
-      level: editData.level || "",
-      email: editData.email,
-      wa: editData.wa,
-      password: "",
-    } : { nip: "", name: "", status: undefined, rfid: "", subject: "", level: "", email: "", wa: "", password: "" },
+      nip: editData.nip, name: editData.name, status: editData.status, rfid: editData.rfid || "",
+      subject: editData.subject || "", levels: normalizeLevels(editData),
+      email: editData.email, wa: editData.wa, password: "",
+    } : { nip: "", name: "", status: undefined, rfid: "", subject: "", levels: [], email: "", wa: "", password: "" },
   });
 
   useEffect(() => {
     if (open) {
       if (editData) {
-        reset({ nip: editData.nip, name: editData.name, status: editData.status, rfid: editData.rfid || "", subject: editData.subject || "", level: editData.level || "", email: editData.email, wa: editData.wa, password: "" });
+        reset({
+          nip: editData.nip, name: editData.name, status: editData.status, rfid: editData.rfid || "",
+          subject: editData.subject || "", levels: normalizeLevels(editData),
+          email: editData.email, wa: editData.wa, password: "",
+        });
         setPhotoPreview(editData.photo || null);
       } else {
-        reset({ nip: "", name: "", status: undefined, rfid: "", subject: "", level: "", email: "", wa: "", password: "" });
+        reset({ nip: "", name: "", status: undefined, rfid: "", subject: "", levels: [], email: "", wa: "", password: "" });
         setPhotoPreview(null);
       }
     }
@@ -111,7 +118,6 @@ export default function TambahGuruModal({ open, onClose, editData }: Props) {
             className="relative w-full max-w-2xl bg-background rounded-2xl shadow-2xl border border-border/50 overflow-hidden max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border/30 sticky top-0 bg-background z-10">
               <h2 className="text-lg font-bold text-foreground">{isEdit ? "Edit" : "Tambah"} Data Guru</h2>
               <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors">
@@ -121,7 +127,6 @@ export default function TambahGuruModal({ open, onClose, editData }: Props) {
 
             <form onSubmit={handleSubmit(onSubmit)} className="p-6">
               <div className="flex gap-6">
-                {/* Left: Photo */}
                 <div className="flex flex-col items-center gap-3 shrink-0">
                   <div className="h-32 w-32 rounded-2xl bg-muted/30 border-2 border-dashed border-border/50 flex items-center justify-center overflow-hidden">
                     {photoPreview ? (
@@ -137,9 +142,7 @@ export default function TambahGuruModal({ open, onClose, editData }: Props) {
                   </button>
                 </div>
 
-                {/* Right: Form fields */}
                 <div className="flex-1 space-y-4 min-w-0">
-                  {/* Row 1: NIP + Name */}
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="NIP" error={errors.nip?.message}>
                       <input {...register("nip")} placeholder="Masukkan NIP" className="form-input" />
@@ -149,7 +152,6 @@ export default function TambahGuruModal({ open, onClose, editData }: Props) {
                     </Field>
                   </div>
 
-                  {/* Row 2: Status + RFID */}
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="Status" error={errors.status?.message}>
                       <select {...register("status")} className="form-input cursor-pointer">
@@ -163,7 +165,6 @@ export default function TambahGuruModal({ open, onClose, editData }: Props) {
                     </Field>
                   </div>
 
-                  {/* Conditional: Subject + Level (only for Guru) */}
                   {status === "Guru" && (
                     <div className="grid grid-cols-2 gap-4">
                       <Field label="Mata Pelajaran" error={errors.subject?.message}>
@@ -172,17 +173,37 @@ export default function TambahGuruModal({ open, onClose, editData }: Props) {
                           {subjects.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </Field>
-                      <Field label="Jenjang" error={errors.level?.message}>
-                        <select {...register("level")} className="form-input cursor-pointer" disabled={!subject}>
-                          <option value="">{subject ? "Pilih Jenjang" : "Pilih mapel dulu"}</option>
-                          <option value="SMP">SMP</option>
-                          <option value="SMA">SMA</option>
-                        </select>
+                      <Field label="Jenjang" error={errors.levels?.message}>
+                        {!subject ? (
+                          <p className="form-input bg-muted/20 text-muted-foreground cursor-not-allowed">Pilih mapel dulu</p>
+                        ) : (
+                          <Controller
+                            control={control}
+                            name="levels"
+                            render={({ field }) => (
+                              <div className="flex items-center gap-5 h-[42px]">
+                                {["SMP", "SMA"].map(lvl => (
+                                  <label key={lvl} className="flex items-center gap-2 cursor-pointer select-none">
+                                    <Checkbox
+                                      checked={field.value?.includes(lvl)}
+                                      onCheckedChange={(checked) => {
+                                        const current = field.value || [];
+                                        field.onChange(
+                                          checked ? [...current, lvl] : current.filter(v => v !== lvl)
+                                        );
+                                      }}
+                                    />
+                                    <span className="text-sm font-medium text-foreground">{lvl}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+                          />
+                        )}
                       </Field>
                     </div>
                   )}
 
-                  {/* Row 3: Email + WA */}
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="Email" error={errors.email?.message}>
                       <input {...register("email")} type="email" placeholder="contoh@school.id" className="form-input" />
@@ -192,14 +213,12 @@ export default function TambahGuruModal({ open, onClose, editData }: Props) {
                     </Field>
                   </div>
 
-                  {/* Row 4: Password */}
                   <Field label="Password" error={errors.password?.message}>
                     <input {...register("password")} type="password" placeholder={isEdit ? "Kosongkan jika tidak diubah" : "Masukkan password"} className="form-input" />
                   </Field>
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="flex gap-3 pt-6 mt-2 border-t border-border/20">
                 <button type="button" onClick={handleClose} className="flex-1 px-4 py-2.5 rounded-xl bg-muted/30 text-sm font-medium text-foreground hover:bg-muted/50 transition-all">
                   Batal

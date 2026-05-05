@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,6 +29,49 @@ import AkunPage from "./pages/dashboard/AkunPage";
 
 const queryClient = new QueryClient();
 
+const PageWrapper = ({ children }: { children: React.ReactNode }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -12 }}
+    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+  >
+    {children}
+  </motion.div>
+);
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<DashboardHome />} />
+          <Route path="jadwal" element={<AdminJadwalPage />} />
+          <Route path="guru-siswa" element={<GuruSiswaPage />} />
+          <Route path="guru-absen" element={<GuruAbsenPage />} />
+          <Route path="perizinan" element={<PerizinanPage />} />
+          <Route path="absensi" element={<PetugasAbsensiPage />} />
+          <Route path="petugas-perizinan" element={<PetugasPerizinanPage />} />
+          <Route path="petugas-jadwal" element={<PetugasJadwalPage />} />
+          <Route path="petugas-laporan" element={<PetugasLaporanPage />} />
+          <Route path="siswa" element={<AdminSiswaPage />} />
+          <Route path="guru" element={<AdminGuruPage />} />
+          <Route path="berita" element={<AdminBeritaPage />} />
+          <Route path="galeri" element={<AdminGaleriPage />} />
+          <Route path="laporan" element={<AdminLaporanPage />} />
+          <Route path="guru-jadwal" element={<JadwalPage />} />
+          <Route path="petugas" element={<PlaceholderPage />} />
+          <Route path="tampilan" element={<TampilanPage />} />
+          <Route path="akun" element={<AkunPage />} />
+        </Route>
+        <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -35,30 +79,7 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<DashboardHome />} />
-              <Route path="jadwal" element={<AdminJadwalPage />} />
-              <Route path="guru-siswa" element={<GuruSiswaPage />} />
-              <Route path="guru-absen" element={<GuruAbsenPage />} />
-              <Route path="perizinan" element={<PerizinanPage />} />
-              <Route path="absensi" element={<PetugasAbsensiPage />} />
-              <Route path="petugas-perizinan" element={<PetugasPerizinanPage />} />
-              <Route path="petugas-jadwal" element={<PetugasJadwalPage />} />
-              <Route path="petugas-laporan" element={<PetugasLaporanPage />} />
-              <Route path="siswa" element={<AdminSiswaPage />} />
-              <Route path="guru" element={<AdminGuruPage />} />
-              <Route path="berita" element={<AdminBeritaPage />} />
-              <Route path="galeri" element={<AdminGaleriPage />} />
-              <Route path="laporan" element={<AdminLaporanPage />} />
-              <Route path="guru-jadwal" element={<JadwalPage />} />
-              <Route path="petugas" element={<PlaceholderPage />} />
-              <Route path="tampilan" element={<TampilanPage />} />
-              <Route path="akun" element={<AkunPage />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AnimatedRoutes />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

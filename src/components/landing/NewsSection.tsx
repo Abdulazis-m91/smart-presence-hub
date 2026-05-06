@@ -21,6 +21,24 @@ const news = [
     desc: "Yayasan meraih penghargaan sebagai lembaga pendidikan dengan sistem digital terbaik.",
     category: "Prestasi",
   },
+  {
+    title: "Pelatihan Guru Berbasis AI",
+    date: "20 Feb 2026",
+    desc: "Para pendidik mengikuti pelatihan pemanfaatan kecerdasan buatan dalam pembelajaran.",
+    category: "Kegiatan",
+  },
+  {
+    title: "Renovasi Gedung Asrama",
+    date: "10 Feb 2026",
+    desc: "Pembaruan fasilitas asrama santri demi kenyamanan dan kualitas hunian yang lebih baik.",
+    category: "Kegiatan",
+  },
+  {
+    title: "Beasiswa Tahfidz Quran",
+    date: "1 Feb 2026",
+    desc: "Program beasiswa baru untuk santri berprestasi dalam bidang hafalan Al-Quran.",
+    category: "Prestasi",
+  },
 ];
 
 const categoryColors: Record<string, string> = {
@@ -67,38 +85,73 @@ export default function NewsSection() {
           </motion.button>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {news.map((n, i) => (
-            <motion.article
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.2 + i * 0.15, duration: 0.5 }}
-              className="group glass rounded-3xl overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1"
-            >
-              <div className="relative h-48 gradient-primary overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors duration-500" />
-                <div className="absolute top-4 left-4">
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${categoryColors[n.category]}`}>
-                    {n.category}
-                  </span>
-                </div>
-                <div className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                  <ArrowUpRight className="h-5 w-5 text-white" />
-                </div>
+        {(() => {
+          const featured = news[0];
+          const small = news.slice(1, 6);
+          return (
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Small list */}
+              <div className="flex flex-col gap-4 order-2 lg:order-1">
+                {small.map((n, i) => (
+                  <motion.article
+                    key={i}
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}
+                    className="group glass rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-0.5 flex gap-4 p-3"
+                  >
+                    <div className="relative h-20 w-24 sm:h-24 sm:w-28 shrink-0 rounded-xl gradient-primary overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div className="absolute top-1.5 left-1.5">
+                        <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full ${categoryColors[n.category]}`}>
+                          {n.category}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0 py-1">
+                      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-1">
+                        <Calendar className="h-3 w-3" />
+                        {n.date}
+                      </div>
+                      <h3 className="text-sm sm:text-base font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors duration-300">{n.title}</h3>
+                      <p className="text-xs text-muted-foreground line-clamp-1 mt-1 hidden sm:block">{n.desc}</p>
+                    </div>
+                  </motion.article>
+                ))}
               </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-                  <Calendar className="h-3.5 w-3.5" />
-                  {n.date}
+
+              {/* Featured large */}
+              <motion.article
+                initial={{ opacity: 0, x: 30 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="group glass rounded-3xl overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-1 order-1 lg:order-2 flex flex-col"
+              >
+                <div className="relative h-64 sm:h-80 lg:h-full lg:min-h-[420px] gradient-primary overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors duration-500" />
+                  <div className="absolute top-5 left-5 flex items-center gap-2">
+                    <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-white/90 text-primary uppercase tracking-wider">Terbaru</span>
+                    <span className={`text-xs font-semibold px-3 py-1 rounded-full ${categoryColors[featured.category]}`}>
+                      {featured.category}
+                    </span>
+                  </div>
+                  <div className="absolute top-5 right-5 h-11 w-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                    <ArrowUpRight className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+                    <div className="flex items-center gap-2 text-xs text-white/80 mb-3">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {featured.date}
+                    </div>
+                    <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight">{featured.title}</h3>
+                    <p className="text-sm sm:text-base text-white/85 leading-relaxed line-clamp-3">{featured.desc}</p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">{n.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{n.desc}</p>
-              </div>
-            </motion.article>
-          ))}
-        </div>
+              </motion.article>
+            </div>
+          );
+        })()}
       </div>
     </section>
   );

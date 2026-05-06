@@ -91,7 +91,7 @@ export default function NewsSection() {
           return (
             <div className="grid lg:grid-cols-2 gap-6">
               {/* Small list */}
-              <div className="flex flex-col gap-4 order-2 lg:order-1">
+              <div className="flex flex-col gap-4 order-2 lg:order-2">
                 {small.map((n, i) => (
                   <motion.article
                     key={i}
@@ -125,7 +125,7 @@ export default function NewsSection() {
                 initial={{ opacity: 0, x: 30 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="group glass rounded-3xl overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-1 order-1 lg:order-2 flex flex-col"
+                className="group glass rounded-3xl overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-1 order-1 lg:order-1 flex flex-col"
               >
                 <div className="relative h-64 sm:h-80 lg:h-full lg:min-h-[420px] gradient-primary overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />

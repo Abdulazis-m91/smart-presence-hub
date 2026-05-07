@@ -164,80 +164,83 @@ export default function HeroSlider() {
       />
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 pt-24 pb-16">
-        <AnimatePresence mode="wait">
+        <div className="text-center space-y-8">
+          {/* Badge — static */}
           <motion.div
-            key={current}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center space-y-8"
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium text-muted-foreground"
           >
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium text-muted-foreground"
-            >
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span>Sistem Absensi Generasi Baru</span>
-            </motion.div>
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span>Sistem Absensi Generasi Baru</span>
+          </motion.div>
 
-            {/* Icon */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="flex justify-center"
-            >
-              <div className={`relative p-6 rounded-3xl bg-gradient-to-br ${slides[current].gradient} glass border-0`}>
-                <div className="absolute inset-0 rounded-3xl glow-primary opacity-50" />
+          {/* Icon — static card, only icon swaps */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="flex justify-center"
+          >
+            <div className="relative p-6 rounded-3xl bg-gradient-to-br from-primary/15 via-secondary/10 to-primary/15 glass border-0">
+              <div className="absolute inset-0 rounded-3xl glow-primary opacity-50" />
+              <AnimatePresence mode="wait">
                 {(() => {
                   const Icon = slides[current].icon;
-                  return <Icon className="relative h-14 w-14 text-primary" strokeWidth={1.5} />;
+                  return (
+                    <motion.div
+                      key={current}
+                      initial={{ opacity: 0, scale: 0.6, rotate: -15 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      exit={{ opacity: 0, scale: 0.6, rotate: 15 }}
+                      transition={{ duration: 0.4 }}
+                      className="relative"
+                    >
+                      <Icon className="h-14 w-14 text-primary" strokeWidth={1.5} />
+                    </motion.div>
+                  );
                 })()}
-              </div>
-            </motion.div>
-
-            {/* Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight"
-            >
-              <span className="text-foreground">{slides[current].title} </span>
-              <span className="gradient-text">{slides[current].highlight}</span>
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.5 }}
-              className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
-            >
-              {slides[current].subtitle}
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55, duration: 0.5 }}
-              className="flex flex-wrap items-center justify-center gap-4 pt-2"
-            >
-              <button className="group relative gradient-primary text-primary-foreground px-8 py-3.5 rounded-2xl text-sm font-semibold overflow-hidden transition-all hover:shadow-lg hover:shadow-primary/25">
-                <span className="relative z-10">Mulai Sekarang</span>
-                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              </button>
-              <button className="glass px-8 py-3.5 rounded-2xl text-sm font-semibold text-foreground hover:bg-muted/50 transition-all">
-                Pelajari Lebih Lanjut
-              </button>
-            </motion.div>
+              </AnimatePresence>
+            </div>
           </motion.div>
-        </AnimatePresence>
+
+          {/* Title + Subtitle — only these change */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
+            >
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
+                <span className="text-foreground">{slides[current].title} </span>
+                <span className="gradient-text">{slides[current].highlight}</span>
+              </h1>
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                {slides[current].subtitle}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* CTA Buttons — static */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55, duration: 0.5 }}
+            className="flex flex-wrap items-center justify-center gap-4 pt-2"
+          >
+            <button className="group relative gradient-primary text-primary-foreground px-8 py-3.5 rounded-2xl text-sm font-semibold overflow-hidden transition-all hover:shadow-lg hover:shadow-primary/25">
+              <span className="relative z-10">Mulai Sekarang</span>
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            </button>
+            <button className="glass px-8 py-3.5 rounded-2xl text-sm font-semibold text-foreground hover:bg-muted/50 transition-all">
+              Pelajari Lebih Lanjut
+            </button>
+          </motion.div>
+        </div>
 
         {/* Stats bar */}
         <motion.div

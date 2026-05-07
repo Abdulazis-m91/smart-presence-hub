@@ -196,34 +196,45 @@ export default function HeroSlider() {
             </div>
           </motion.div>
 
-          {/* Title + Subtitle — only these change */}
-          <div className="relative min-h-[280px] sm:min-h-[260px]">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-6 absolute inset-x-0"
-            >
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
+          {/* Title — fixed-height slot */}
+          <div className="relative h-[120px] sm:h-[150px] lg:h-[180px] flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              <motion.h1
+                key={`t-${current}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-x-0 text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight"
+              >
                 <span className="text-foreground">{slides[current].title} </span>
                 <span className="gradient-text">{slides[current].highlight}</span>
-              </h1>
-              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                {slides[current].subtitle}
-              </p>
-            </motion.div>
-          </AnimatePresence>
+              </motion.h1>
+            </AnimatePresence>
           </div>
 
-          {/* CTA Buttons — static */}
+          {/* Subtitle — fixed-height slot */}
+          <div className="relative h-[80px] sm:h-[64px] flex items-start justify-center">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={`s-${current}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-x-0 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4"
+              >
+                {slides[current].subtitle}
+              </motion.p>
+            </AnimatePresence>
+          </div>
+
+          {/* CTA Buttons — static, fixed height */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55, duration: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-4 pt-2"
+            className="flex flex-nowrap items-center justify-center gap-4 pt-2 min-h-[60px]"
           >
             <button className="group relative gradient-primary text-primary-foreground px-8 py-3.5 rounded-2xl text-sm font-semibold overflow-hidden transition-all hover:shadow-lg hover:shadow-primary/25">
               <span className="relative z-10">Mulai Sekarang</span>

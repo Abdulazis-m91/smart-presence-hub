@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { ChevronLeft, ChevronRight, Wifi, CreditCard, BarChart3, Sparkles } from "lucide-react";
+import logoYayasan from "@/assets/logo-yayasan.png";
 
 const slides = [
   {
@@ -174,25 +175,13 @@ export default function HeroSlider() {
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className="flex justify-center"
           >
-            <div className="relative h-28 w-28 flex items-center justify-center rounded-3xl bg-gradient-to-br from-primary/15 via-secondary/10 to-primary/15 glass border-0 shrink-0">
+            <div className="relative h-28 w-28 flex items-center justify-center rounded-3xl shrink-0">
               <div className="absolute inset-0 rounded-3xl glow-primary opacity-50" />
-              <AnimatePresence mode="wait">
-                {(() => {
-                  const Icon = slides[current].icon;
-                  return (
-                    <motion.div
-                      key={current}
-                      initial={{ opacity: 0, scale: 0.6, rotate: -15 }}
-                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                      exit={{ opacity: 0, scale: 0.6, rotate: 15 }}
-                      transition={{ duration: 0.4 }}
-                      className="relative"
-                    >
-                      <Icon className="h-14 w-14 text-primary" strokeWidth={1.5} />
-                    </motion.div>
-                  );
-                })()}
-              </AnimatePresence>
+              <img
+                src={logoYayasan}
+                alt="Logo Yayasan Baitulloh Lampung"
+                className="relative h-24 w-24 object-contain drop-shadow-lg"
+              />
             </div>
           </motion.div>
 

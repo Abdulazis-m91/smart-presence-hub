@@ -84,7 +84,7 @@ export default function HeroSlider() {
 
   return (
     <section
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#1f4620]"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-muted"
       onMouseMove={handleMouseMove}
     >
       {/* Animated mesh gradient background */}

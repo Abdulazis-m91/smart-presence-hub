@@ -84,7 +84,7 @@ export default function HeroSlider() {
 
   return (
     <section
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#1f4620]"
       onMouseMove={handleMouseMove}
     >
       {/* Animated mesh gradient background */}
@@ -154,15 +154,6 @@ export default function HeroSlider() {
         ))}
       </div>
 
-      {/* Grid pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
-          backgroundSize: "60px 60px",
-        }}
-      />
-
       <div className="relative z-10 max-w-6xl mx-auto px-4 pt-24 pb-16">
         <div className="text-center space-y-8">
           {/* Badge — static */}
@@ -183,7 +174,7 @@ export default function HeroSlider() {
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className="flex justify-center"
           >
-            <div className="relative p-6 rounded-3xl bg-gradient-to-br from-primary/15 via-secondary/10 to-primary/15 glass border-0">
+            <div className="relative h-28 w-28 flex items-center justify-center rounded-3xl bg-gradient-to-br from-primary/15 via-secondary/10 to-primary/15 glass border-0 shrink-0">
               <div className="absolute inset-0 rounded-3xl glow-primary opacity-50" />
               <AnimatePresence mode="wait">
                 {(() => {
@@ -206,6 +197,7 @@ export default function HeroSlider() {
           </motion.div>
 
           {/* Title + Subtitle — only these change */}
+          <div className="relative min-h-[280px] sm:min-h-[260px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={current}
@@ -213,7 +205,7 @@ export default function HeroSlider() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="space-y-6"
+              className="space-y-6 absolute inset-x-0"
             >
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
                 <span className="text-foreground">{slides[current].title} </span>
@@ -224,6 +216,7 @@ export default function HeroSlider() {
               </p>
             </motion.div>
           </AnimatePresence>
+          </div>
 
           {/* CTA Buttons — static */}
           <motion.div

@@ -9,7 +9,6 @@ const slides = [
     highlight: "System",
     subtitle: "Sistem absensi modern berbasis RFID Smartcard untuk sekolah dan pesantren dengan teknologi terdepan",
     gradient: "from-blue-500/20 via-cyan-500/10 to-emerald-500/20",
-    particleColor: "bg-primary/30",
   },
   {
     icon: Wifi,
@@ -17,7 +16,6 @@ const slides = [
     highlight: "Monitoring",
     subtitle: "Pantau kehadiran guru, siswa, dan staf secara langsung dari mana saja dengan dashboard interaktif",
     gradient: "from-emerald-500/20 via-teal-500/10 to-blue-500/20",
-    particleColor: "bg-secondary/30",
   },
   {
     icon: BarChart3,
@@ -25,7 +23,6 @@ const slides = [
     highlight: "Analitik",
     subtitle: "Dapatkan insight mendalam dengan laporan kehadiran otomatis, akurat, dan visual yang informatif",
     gradient: "from-violet-500/20 via-blue-500/10 to-cyan-500/20",
-    particleColor: "bg-primary/30",
   },
 ];
 
@@ -97,10 +94,37 @@ export default function HeroSlider() {
           className="absolute inset-0"
         >
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-          <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-primary/8 rounded-full blur-[100px] animate-glow-pulse" />
-          <div className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-secondary/8 rounded-full blur-[100px] animate-glow-pulse" style={{ animationDelay: "2s" }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] animate-glow-pulse" style={{ animationDelay: "4s" }} />
+          <motion.div
+            className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px]"
+            animate={{ x: [0, 120, -40, 0], y: [0, 80, -60, 0], scale: [1, 1.2, 0.9, 1] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px]"
+            animate={{ x: [0, -100, 60, 0], y: [0, -70, 50, 0], scale: [1, 0.85, 1.15, 1] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[120px]"
+            animate={{ scale: [1, 1.25, 1], rotate: [0, 90, 0], opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-10 right-1/3 w-[300px] h-[300px] bg-secondary/8 rounded-full blur-[90px]"
+            animate={{ x: [0, 60, -50, 0], y: [0, 100, 40, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          />
         </motion.div>
+        {/* Animated conic shimmer */}
+        <motion.div
+          className="absolute inset-0 opacity-[0.08] pointer-events-none"
+          style={{
+            background:
+              "conic-gradient(from 0deg at 50% 50%, hsl(var(--primary)) 0%, transparent 25%, hsl(var(--secondary)) 50%, transparent 75%, hsl(var(--primary)) 100%)",
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+        />
       </div>
 
       {/* Floating particles */}
@@ -108,7 +132,7 @@ export default function HeroSlider() {
         {floatingParticles.map((p) => (
           <motion.div
             key={p.id}
-            className={`absolute rounded-full ${slides[current].particleColor}`}
+            className="absolute rounded-full bg-primary/30"
             style={{
               width: p.size,
               height: p.size,

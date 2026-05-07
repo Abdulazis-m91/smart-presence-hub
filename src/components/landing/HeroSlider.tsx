@@ -197,6 +197,7 @@ export default function HeroSlider() {
           </motion.div>
 
           {/* Title + Subtitle — only these change */}
+          <div className="relative min-h-[280px] sm:min-h-[260px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={current}
@@ -204,7 +205,7 @@ export default function HeroSlider() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="space-y-6"
+              className="space-y-6 absolute inset-x-0"
             >
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
                 <span className="text-foreground">{slides[current].title} </span>
@@ -215,6 +216,7 @@ export default function HeroSlider() {
               </p>
             </motion.div>
           </AnimatePresence>
+          </div>
 
           {/* CTA Buttons — static */}
           <motion.div

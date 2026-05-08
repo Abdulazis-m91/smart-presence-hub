@@ -167,23 +167,6 @@ export default function HeroSlider() {
             <span>Sistem Absensi Generasi Baru</span>
           </motion.div>
 
-          {/* Icon — static card, only icon swaps */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="flex justify-center"
-          >
-            <div className="relative h-28 w-28 flex items-center justify-center rounded-3xl shrink-0">
-              <div className="absolute inset-0 rounded-3xl glow-primary opacity-50" />
-              <img
-                src={logoYayasan}
-                alt="Logo Yayasan Baitulloh Lampung"
-                className="relative h-24 w-24 object-contain drop-shadow-lg"
-              />
-            </div>
-          </motion.div>
-
           {/* Title — fixed-height slot */}
           <div className="relative h-[120px] sm:h-[150px] lg:h-[180px] flex items-center justify-center">
             <AnimatePresence mode="wait">

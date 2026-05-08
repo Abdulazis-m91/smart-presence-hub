@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { ChevronLeft, ChevronRight, Wifi, CreditCard, BarChart3, Sparkles } from "lucide-react";
-import logoYayasan from "@/assets/logo-yayasan.png";
 
 const slides = [
   {

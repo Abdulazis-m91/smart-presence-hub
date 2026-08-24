@@ -107,10 +107,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
                 {isLoading ? "Memproses..." : "Masuk"}
               </button>
-
-              <p className="text-xs text-center text-muted-foreground">
-                Developer: abdulazisf2000@gmail.com / Jquerym91
-              </p>
             </form>
           </motion.div>
         </motion.div>

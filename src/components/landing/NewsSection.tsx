@@ -89,9 +89,9 @@ export default function NewsSection() {
           const featured = news[0];
           const small = news.slice(1, 6);
           return (
-            <div className="grid lg:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               {/* Small list */}
-              <div className="flex flex-col gap-4 order-2 lg:order-2">
+              <div className="flex flex-col gap-4 order-2 md:order-2">
                 {small.map((n, i) => (
                   <motion.article
                     key={i}
@@ -125,9 +125,9 @@ export default function NewsSection() {
                 initial={{ opacity: 0, x: 30 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="group glass rounded-3xl overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-1 order-1 lg:order-1 flex flex-col"
+                className="group glass rounded-3xl overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-1 order-1 md:order-1 flex flex-col"
               >
-                <div className="relative h-64 sm:h-80 lg:h-full lg:min-h-[420px] gradient-primary overflow-hidden">
+                <div className="relative h-64 sm:h-80 md:h-full md:min-h-[420px] gradient-primary overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                   <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors duration-500" />
                   <div className="absolute top-5 left-5 flex items-center gap-2">

@@ -185,7 +185,7 @@ export default function HeroSlider() {
           </div>
 
           {/* Subtitle — fixed-height slot */}
-          <div className="relative h-[80px] sm:h-[64px] flex items-start justify-center">
+          <div className="relative min-h-[96px] sm:min-h-[64px] flex items-start justify-center">
             <AnimatePresence mode="wait">
               <motion.p
                 key={`s-${current}`}
@@ -193,7 +193,7 @@ export default function HeroSlider() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className="absolute inset-x-0 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4"
+                className="absolute inset-x-0 text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-6 sm:px-4"
               >
                 {slides[current].subtitle}
               </motion.p>
@@ -256,11 +256,11 @@ export default function HeroSlider() {
         </div>
       </div>
 
-      {/* Nav arrows */}
-      <button onClick={() => go(-1)} className="absolute left-6 top-1/2 -translate-y-1/2 p-3 glass rounded-2xl hover:bg-muted/50 transition-all hover:scale-110 group z-20">
+      {/* Nav arrows — hidden on very small screens to avoid overlapping text; dots below handle nav on mobile */}
+      <button onClick={() => go(-1)} className="hidden sm:flex absolute left-3 md:left-6 top-1/2 -translate-y-1/2 p-3 glass rounded-2xl hover:bg-muted/50 transition-all hover:scale-110 group z-20">
         <ChevronLeft className="h-5 w-5 text-foreground group-hover:text-primary transition-colors" />
       </button>
-      <button onClick={() => go(1)} className="absolute right-6 top-1/2 -translate-y-1/2 p-3 glass rounded-2xl hover:bg-muted/50 transition-all hover:scale-110 group z-20">
+      <button onClick={() => go(1)} className="hidden sm:flex absolute right-3 md:right-6 top-1/2 -translate-y-1/2 p-3 glass rounded-2xl hover:bg-muted/50 transition-all hover:scale-110 group z-20">
         <ChevronRight className="h-5 w-5 text-foreground group-hover:text-primary transition-colors" />
       </button>
 

@@ -1,17 +1,23 @@
 import Header from "@/components/landing/Header";
-import HeroSlider from "@/components/landing/HeroSlider";
-import InfoSection from "@/components/landing/InfoSection";
+import Banner from "@/components/landing/Banner";
 import NewsSection from "@/components/landing/NewsSection";
-import GallerySection from "@/components/landing/GallerySection";
+import VisiSection from "@/components/landing/VisiSection";
+import UnitPendidikanSection from "@/components/landing/UnitPendidikanSection";
+import VokasiSection from "@/components/landing/VokasiSection";
+import AktivitasSection from "@/components/landing/AktivitasSection";
+import LokasiSection from "@/components/landing/LokasiSection";
 import Footer from "@/components/landing/Footer";
 
 const Index = () => (
-  <div className="min-h-screen bg-background">
+  <div className="min-h-screen bg-white">
     <Header />
-    <HeroSlider />
-    <InfoSection />
+    <Banner />
     <NewsSection />
-    <GallerySection />
+    <VisiSection />
+    <UnitPendidikanSection />
+    <VokasiSection />
+    <AktivitasSection />
+    <LokasiSection />
     <Footer />
   </div>
 );
